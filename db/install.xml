@@ -4,17 +4,9 @@
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="block_gps" COMMENT="List of all geolocated conditions">
+    <TABLE NAME="block_gps" COMMENT="">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="cmid" TYPE="int" LENGTH="18" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="longitude" TYPE="float" LENGTH="12" NOTNULL="true" SEQUENCE="false" DECIMALS="11"/>
-        <FIELD NAME="latitude" TYPE="float" LENGTH="12" NOTNULL="true" SEQUENCE="false" DECIMALS="11"/>
-        <FIELD NAME="accuracy" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="50" SEQUENCE="false"/>
-        <FIELD NAME="persistent" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="reveal" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
-        <FIELD NAME="sectionid" TYPE="int" LENGTH="18" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

@@ -55,16 +55,20 @@ if (isset($SESSION->availability_gps_longitude)) {
     );
 }
 
-$PAGE->set_url('/blocks/gps/map.php', $urlparams); // Defined here to avoid notices on errors etc
+$PAGE->set_url(new moodle_url($CFG->wwwroot . '/blocks/gps/map.php', $urlparams)); // Defined here to avoid notices on errors etc
 $PAGE->set_cacheable(false);
 $PAGE->set_pagelayout('course');
+$course->format = course_get_format($course)->get_format();
+$PAGE->set_pagetype('course-view-' . $course->format);
 $PAGE->set_title(get_string('map', 'block_gps'));
 $PAGE->set_heading(get_string('map', 'block_gps'));
-$PAGE->requires->js('/blocks/gps/js/main.js');
+$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/blocks/gps/js/main.js'));
+$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/blocks/gps/js/leaflet.js'));
+$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/gps/css/leaflet.css'));
 
 context_helper::preload_course($course->id);
 $context = context_course::instance($course->id, MUST_EXIST);
-
+$PAGE->set_context($context);
 require_login($course);
 
 echo $OUTPUT->header();
@@ -74,90 +78,94 @@ $userposition = (object)array(
     'latitude' => $SESSION->availability_gps_latitude,
 );
 
+echo $OUTPUT->render_from_template(
+    'block_gps/nav-buttons',
+    (object)array(
+        'courseid' => $course->id,
+        'goto' => 'list',
+        'gotostr' => get_string('list', 'block_gps'),
+        'wwwroot' => $CFG->wwwroot,
+    )
+);
+
 $unrevealed = [];
 ?>
 
-<div>
-<a href="#" onclick="block_gps_locate();" class="btn btn-primary">
-    <?php echo get_string('update_location', 'block_gps'); ?>
-</a>
-<a href="<?php echo $CFG->wwwroot . '/blocks/gps/list.php?id=' . $course->id; ?>" class="btn">
-    <?php echo get_string('list', 'block_gps'); ?>
-</a>
-</div>
-
-<link rel="stylesheet" type="text/css" href="/blocks/gps/css/leaflet.css" />
-<!-- <script type='text/javascript' src='//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js'></script> -->
-<script type='text/javascript' src='/blocks/gps/js/leaflet.js'></script>
 <div id="map" style="height: 440px; border: 1px solid #AAA;"></div>
 <script>
-var markers = [
-    <?php
-    $smallest_lon = 200;
-    $smallest_lat = 200;
-    $biggest_lon = -200;
-    $biggest_lat = -200;
-
-    foreach($locations AS &$location) {
-        if ($smallest_lon > $location->longitude) { $smallest_lon = $location->longitude; }
-        if ($smallest_lat > $location->latitude) { $smallest_lat = $location->latitude; }
-        if ($biggest_lon < $location->longitude) { $biggest_lon = $location->longitude; }
-        if ($biggest_lat < $location->latitude) { $biggest_lat = $location->latitude; }
-
-        //$cm = $cms[$location->cmid];
-        $conditionposition = (object)array(
-            'longitude' => $location->longitude,
-            'latitude' => $location->latitude,
-        );
-        $location->distance = \availability_gps\block_gps_lib::get_distance($userposition, $conditionposition, 2);
-        $chkdist = ($location->distance < $location->accuracy);
-        $location->distlbl = ($location->distance !== -1) ? $location->distance . ' ' . get_string('meters', 'block_gps') : get_string('n_a', 'block_gps');
-
-        if (isset($location->type) && $location->type == 'self') {
-            $location->marker = '/blocks/gps/pix/google-maps-pin-orange.svg';
-            $location->icon = $marker;
-            $location->name = get_string('you', 'block_gps');
-            $location->url = '';
-            $location->available = true;
-        } else {
-            if ($location->cmid > 0) {
-                $cm = $modinfo->get_cm($location->cmid);
-                $location->alt = $cm->modname;
-                $location->icon = (method_exists($cm, 'get_icon_url')?$cm->get_icon_url():'');
-                $location->name = $cm->name;
-                $location->url = $cm->url;
-                $info = new \core_availability\info_module($cm);
-            } elseif ($location->sectionid > 0) {
-                $sec = $DB->get_record('course_sections', array('id' => $location->sectionid));
-                $location->alt = get_string('section');
-                $location->icon = '/pix/i/folder.svg';
-                $location->name = $sec->name;
-                $location->url = $CFG->wwwroot . '/course/view.php?id=' . $sec->course . '&sectionid=' . $sec->id . '#section-' . $sec->section;
-                $info = new \core_availability\info_section($courseformat->get_section($sec));
-            }
-            $condition = new \availability_gps\condition($location);
-            $location->available = $condition->is_available(false, $info, null, $USER->id);
-        }
-        if ($location->revealname != 1 && $location->available != 1) {
-            $location->name = get_string('n_a', 'block_gps');
-        }
-
-        if ($location->reveal == 1) {
-        ?>
-    {
-      "marker": "<?php echo $location->marker; ?>",
-      "name": "<img src=\"<?php echo $location->icon; ?>\" style=\"max-height: 1em;\" alt=\"<?php echo $location->alt; ?>\" /><?php echo $location->name; ?>",
-      "url": "<?php echo $location->url; ?>",
-      "lat": <?php echo $location->latitude; ?>,
-      "lng": <?php echo $location->longitude; ?>
-    },
+window.onload = function() {
+    var markers = [
         <?php
-        } else {
-            $unrevealed[] = $location;
+        $smallest_lon = 200;
+        $smallest_lat = 200;
+        $biggest_lon = -200;
+        $biggest_lat = -200;
+
+        foreach($locations AS &$location) {
+            if ($smallest_lon > $location->longitude) { $smallest_lon = $location->longitude; }
+            if ($smallest_lat > $location->latitude) { $smallest_lat = $location->latitude; }
+            if ($biggest_lon < $location->longitude) { $biggest_lon = $location->longitude; }
+            if ($biggest_lat < $location->latitude) { $biggest_lat = $location->latitude; }
+
+            //$cm = $cms[$location->cmid];
+            $conditionposition = (object)array(
+                'longitude' => $location->longitude,
+                'latitude' => $location->latitude,
+            );
+            $location->distance = \availability_gps\block_gps_lib::get_distance($userposition, $conditionposition, 2);
+            $chkdist = ($location->distance < $location->accuracy);
+            $location->distlbl = ($location->distance !== -1) ? $location->distance . ' ' . get_string('meters', 'block_gps') : get_string('n_a', 'block_gps');
+
+            if (isset($location->type) && $location->type == 'self') {
+                $location->marker = $CFG->wwwroot . '/blocks/gps/pix/google-maps-pin-orange.svg';
+                $location->icon = $marker;
+                $location->name = get_string('you', 'block_gps');
+                $location->alt = $location->name;
+                $location->url = $CFG->wwwroot . '/user/profile.php?id=' . $USER->id;
+                $location->available = true;
+            } else {
+                if ($location->cmid > 0) {
+                    $cm = $modinfo->get_cm($location->cmid);
+                    $location->alt = $cm->modname;
+                    $location->icon = (method_exists($cm, 'get_icon_url')?$cm->get_icon_url():'');
+                    $location->name = $cm->name;
+                    $location->url = $cm->url;
+                    $info = new \core_availability\info_module($cm);
+                } elseif ($location->sectionid > 0) {
+                    $sec = $DB->get_record('course_sections', array('id' => $location->sectionid));
+                    $location->alt = get_string('section');
+                    $location->icon = $CFG->wwwroot . '/pix/i/folder.svg';
+                    $location->name = $sec->name;
+                    $location->url = $CFG->wwwroot . '/course/view.php?id=' . $sec->course . '&sectionid=' . $sec->id . '#section-' . $sec->section;
+                    $info = new \core_availability\info_section($courseformat->get_section($sec));
+                }
+                $condition = new \availability_gps\condition($location);
+                $location->available = $condition->is_available(false, $info, null, $USER->id);
+            }
+            if ($location->revealname != 1 && $location->available != 1) {
+                $location->name = get_string('n_a', 'block_gps');
+            }
+            if ($location->reveal != 1 && $location->available != 1) {
+                $location->longitude = '';
+                $location->latitude = get_string('n_a', 'block_gps');
+            }
+
+            if ($location->longitude != '') {
+            ?>
+        {
+          "marker": "<?php echo $location->marker; ?>",
+          "name": "<img src=\"<?php echo $location->icon; ?>\" style=\"max-height: 1em;\" alt=\"<?php echo $location->alt; ?>\" /><?php echo $location->name; ?>",
+          "url": "<?php echo $location->url; ?>",
+          "lat": <?php echo $location->latitude; ?>,
+          "lng": <?php echo $location->longitude; ?>
+        },
+            <?php
+            } else {
+                $unrevealed[] = $location;
+            }
         }
-    }
-    ?>
-];
+        ?>
+    ];
     var bounds = [
         [<?php echo $smallest_lat; ?>, <?php echo $smallest_lon; ?>],
         [<?php echo $biggest_lat; ?>, <?php echo $biggest_lon; ?>]
@@ -174,8 +182,8 @@ var markers = [
         subdomains: ['a','b','c']
     }).addTo( map );
     var icon = L.icon({
-        iconUrl: '/blocks/gps/pix/google-maps-pin-blue.svg',
-        iconRetinaUrl: '/blocks/gps/pix/google-maps-pin-blue.svg',
+        iconUrl: '<?php echo $CFG->wwwroot; ?>/blocks/gps/pix/google-maps-pin-blue.svg',
+        iconRetinaUrl: '<?php echo $CFG->wwwroot; ?>/blocks/gps/pix/google-maps-pin-blue.svg',
         iconSize: [29, 24],
         iconAnchor: [9, 21],
         popupAnchor: [0, -14]
@@ -195,21 +203,18 @@ var markers = [
           .bindPopup( '<a href="' + markers[i].url + '" target="_blank">' + markers[i].name + '</a>' )
           .addTo( map );
     }
+}
 </script>
 <?php
 
 if (count($unrevealed) > 0) {
-    echo "<p>" . get_string('unrevealed_' . ((count($unrevealed) == 1) ? 's' : 'm'), 'block_gps', array('amount' => count($unrevealed))) . "</p>";
-    echo "<ul>";
-    foreach($unrevealed AS $location) {
-        ?>
-        <li>
-            <img src="<?php echo $location->icon; ?>" style="max-height: 1em;" alt="<?php echo $location->alt; ?>" />
-            <?php echo $location->name; ?>
-        </li>
-        <?php
-    }
-    echo "</ul>";
+    echo $OUTPUT->render_from_template(
+        'block_gps/unrevealed-' . ((count($unrevealed) == 1)?'single':'multiple'),
+        (object) array(
+            'amount' => count($unrevealed),
+            'items' => $unrevealed,
+        )
+    );
 }
 
 echo $OUTPUT->footer();

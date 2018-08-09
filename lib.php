@@ -110,6 +110,10 @@ class block_gps_lib  {
                 if ($condition->type == 'gps') {
                     $condition->cmid = 0; $condition->sectionid = 0;
                     $condition->{$idtype} = $o->id;
+                    if (!isset($condition->accuracy)) { $condition->accuracy = 5; }
+                    if (!isset($condition->persistent)) { $condition->persistent = 0; }
+                    if (!isset($condition->revealname)) { $condition->revealname = 0; }
+                    if (!isset($condition->reveal)) { $condition->reveal = 0; }
                     $positions[] = $condition;
                 }
             }
