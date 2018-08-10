@@ -56,10 +56,14 @@ class block_gps_lib  {
         if (!self::check_positions(array($position1, $position2))) {
             return -1;
         }
-        $distlon = 111.3 * ($position1->longitude - $position2->longitude) * 1000;
-        $distlat = 111.3 * ($position1->latitude - $position2->latitude) * 1000;
-
-        return abs(round(($distlon > $distlat) ? $distlon : $distlat, $decimals));
+        $lat1 = deg2rad($position1->latitude);
+        $lon1 = deg2rad($position1->longitude);
+        $lat2 = deg2rad($position2->latitude);
+        $lon2 = deg2rad($position2->longitude);
+        $latDelta = $lat2 - $lat1;
+        $lonDelta = $lon2 - $lon1;
+        $angle = 2*asin(sqrt(pow(sin($latDelta / 2), 2) + cos($lat1) * cos($lat2) * pow(sin($lonDelta / 2), 2)));
+        return round($angle * 6378.388 * 1000, 0);
     }
     /**
      * Checks a list of positions if coordinates are valid.

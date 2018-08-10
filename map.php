@@ -113,7 +113,7 @@ window.onload = function() {
             );
             $location->distance = \availability_gps\block_gps_lib::get_distance($userposition, $conditionposition, 2);
             $chkdist = ($location->distance < $location->accuracy);
-            $location->distlbl = ($location->distance !== -1) ? $location->distance . ' ' . get_string('meters', 'block_gps') : get_string('n_a', 'block_gps');
+            $location->distlbl = ($location->distance !== -1) ? number_format($location->distance, 0, ',', '.') . ' ' . get_string('meters', 'block_gps') : get_string('n_a', 'block_gps');
 
             if (isset($location->type) && $location->type == 'self') {
                 $location->marker = $CFG->wwwroot . '/blocks/gps/pix/google-maps-pin-orange.svg';

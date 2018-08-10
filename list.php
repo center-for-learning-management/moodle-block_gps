@@ -80,9 +80,9 @@ foreach($locations AS &$location) {
         'longitude' => $location->longitude,
         'latitude' => $location->latitude,
     );
-    $distance = \availability_gps\block_gps_lib::get_distance($userposition, $conditionposition, 2);
-    $chkdist = ($distance < $location->accuracy);
-    $location->distlbl = ($distance !== -1) ? $distance . ' ' . get_string('meters', 'block_gps') : get_string('n_a', 'block_gps');
+    $location->distance = \availability_gps\block_gps_lib::get_distance($userposition, $conditionposition, 2);
+    $chkdist = ($location->distance < $location->accuracy);
+    $location->distlbl = ($distance !== -1) ? number_format($location->distance, 0, ',', '.') . ' ' . get_string('meters', 'block_gps') : get_string('n_a', 'block_gps');
 
     $location->alt = ''; $location->icon = ''; $location->name = ''; $location->url = '';
     if ($location->cmid > 0) {
