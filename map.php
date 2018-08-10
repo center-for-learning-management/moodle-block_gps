@@ -117,7 +117,8 @@ window.onload = function() {
 
             if (isset($location->type) && $location->type == 'self') {
                 $location->marker = $CFG->wwwroot . '/blocks/gps/pix/google-maps-pin-orange.svg';
-                $location->icon = $marker;
+                $pic = new user_picture($USER);
+                $location->icon = $pic->get_url($PAGE); // $marker;
                 $location->name = get_string('you', 'block_gps');
                 $location->alt = $location->name;
                 $location->url = $CFG->wwwroot . '/user/profile.php?id=' . $USER->id;
