@@ -30,30 +30,26 @@ class block_gps extends block_base {
         $this->title = get_string('pluginname', 'block_gps');
     }
     public function get_content() {
-        global $CFG, $COURSE, $PAGE, $SESSION;
+        global $CFG, $COURSE, $OUTPUT, $PAGE, $SESSION;
 
         require_once($CFG->dirroot . '/blocks/gps/lib.php');
         \availability_gps\block_gps_lib::check_coordinates();
+
+        $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/blocks/gps/js/main.js'));
 
         if ($this->content !== null) {
           return $this->content;
         }
         $this->content         =  new stdClass;
-        $this->content->text   = '<input type="button" onclick="block_gps_locate();" value="' . get_string('update_location', 'block_gps') . '" />';
-        if (isset($SESSION->availability_gps_longitude) && $SESSION->availability_gps_longitude > 0) {
-            //$this->content->text .= '<h5>' . get_string('current_location', 'block_gps') . '</h5>';
-            $this->content->text .= '<div>';
-            //$this->content->text .= '<p>' . get_string('longitude', 'block_gps') . ': ' . ;
-            $this->content->text .= $SESSION->availability_gps_longitude;
-            //$this->content->text .= '</p><p>' . get_string('latitude', 'block_gps') . ': ' . ;
-            $this->content->text .= ' ' . $SESSION->availability_gps_latitude;
-            //$this->content->text .= '</p>';
-            $this->content->text .= '</div>';
-        }
-        $this->content->text .= '<div><a href="' . $CFG->wwwroot . '/blocks/gps/list.php?id=' . $COURSE->id . '">' . get_string('list', 'block_gps') . '</a>';
-        $this->content->text .= ' | <a href="' . $CFG->wwwroot . '/blocks/gps/map.php?id=' . $COURSE->id . '">' . get_string('map', 'block_gps') . '</a></div>';
-
-        $this->content->footer = '<script type="text/javascript" src="/blocks/gps/js/main.js"></script>';
+        $this->content->text = $OUTPUT->render_from_template(
+            'block_gps/block',
+            (object)array(
+                'courseid' => $COURSE->id,
+                'latitude' => $SESSION->availability_gps_latitude,
+                'longitude' => $SESSION->availability_gps_longitude,
+                'wwwroot' => $CFG->wwwroot,
+            )
+        );
 
         return $this->content;
     }
