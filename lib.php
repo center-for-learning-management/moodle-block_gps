@@ -56,7 +56,6 @@ class block_gps_lib  {
         if (!self::check_positions(array($position1, $position2))) {
             return -1;
         }
-        //$distlon = 111.3 * cos($position1->latitude) * ($position1->longitude - $position2->longitude) * 1000;
         $distlon = 111.3 * ($position1->longitude - $position2->longitude) * 1000;
         $distlat = 111.3 * ($position1->latitude - $position2->latitude) * 1000;
 

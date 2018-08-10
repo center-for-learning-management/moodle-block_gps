@@ -76,7 +76,6 @@ echo $OUTPUT->render_from_template(
 );
 
 foreach($locations AS &$location) {
-    //$cm = $cms[$location->cmid];
     $conditionposition = (object)array(
         'longitude' => $location->longitude,
         'latitude' => $location->latitude,

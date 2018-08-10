@@ -107,7 +107,6 @@ window.onload = function() {
             if ($biggest_lon < $location->longitude) { $biggest_lon = $location->longitude; }
             if ($biggest_lat < $location->latitude) { $biggest_lat = $location->latitude; }
 
-            //$cm = $cms[$location->cmid];
             $conditionposition = (object)array(
                 'longitude' => $location->longitude,
                 'latitude' => $location->latitude,
@@ -172,11 +171,9 @@ window.onload = function() {
     ];
     var map = L.map( 'map', {
         center: [<?php echo ($smallest_lat + $biggest_lat) / 2; ?>,<?php echo ($smallest_lon + $biggest_lon) / 2; ?>],
-        //minZoom: 2,
         zoom: 13
     });
     map.fitBounds(bounds, { maxZoom: 18 });
-    //alert(map.maxZoom + ' vs ' + map.zoom);
     L.tileLayer( 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         subdomains: ['a','b','c']
