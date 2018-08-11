@@ -40,7 +40,6 @@ if (!empty($id)) {
 }
 $course = $DB->get_record('course', $params, '*', MUST_EXIST);
 $urlparams = array('id' => $course->id);
-$courseformat = course_get_format($course);
 $modinfo = get_fast_modinfo($course);
 $locations = \availability_gps\block_gps_lib::load_positions($course->id);
 

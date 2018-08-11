@@ -104,8 +104,9 @@ class block_gps_lib  {
      * Analyzes conditions for gps type.
      * @param o Object of table course_sections or course_modules
      * @param idtype specifies if id-attribute of o is sectionid or cmid
+     * @return array containing positions
     **/
-    private static function load_position_condition($o, $idtype) {
+    public static function load_position_condition($o, $idtype) {
         $positions = array();
         $av = json_decode($o->availability);
         if (isset($av->c) && count($av->c) > 0) {
