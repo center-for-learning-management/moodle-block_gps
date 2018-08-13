@@ -44,6 +44,11 @@ $courseformat = course_get_format($course);
 $modinfo = get_fast_modinfo($course);
 $locations = \availability_gps\block_gps_lib::load_positions($course->id);
 
+context_helper::preload_course($course->id);
+$context = context_course::instance($course->id, MUST_EXIST);
+$PAGE->set_context($context);
+require_login($course);
+
 $PAGE->set_url(new moodle_url($CFG->wwwroot . '/blocks/gps/list.php'), $urlparams); // Defined here to avoid notices on errors etc
 $PAGE->set_cacheable(false);
 $PAGE->set_pagelayout('course');
@@ -52,11 +57,6 @@ $PAGE->set_pagetype('course-view-' . $course->format);
 $PAGE->set_title(get_string('list', 'block_gps'));
 $PAGE->set_heading(get_string('list', 'block_gps'));
 $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/blocks/gps/js/main.js'));
-
-context_helper::preload_course($course->id);
-$context = context_course::instance($course->id, MUST_EXIST);
-$PAGE->set_context($context);
-require_login($course);
 
 echo $OUTPUT->header();
 
@@ -71,10 +71,12 @@ echo $OUTPUT->render_from_template(
         'courseid' => $course->id,
         'goto' => 'map',
         'gotostr' => get_string('map', 'block_gps'),
+        'is_https' => \block_gps::is_https(),
         'wwwroot' => $CFG->wwwroot,
     )
 );
 
+$unrevealed = array();
 foreach($locations AS &$location) {
     $conditionposition = (object)array(
         'longitude' => $location->longitude,
@@ -82,7 +84,7 @@ foreach($locations AS &$location) {
     );
     $location->distance = \availability_gps\block_gps_lib::get_distance($userposition, $conditionposition, 2);
     $chkdist = ($location->distance < $location->accuracy);
-    $location->distlbl = ($distance !== -1) ? number_format($location->distance, 0, ',', '.') . ' ' . get_string('meters', 'block_gps') : get_string('n_a', 'block_gps');
+    $location->distlbl = ($location->distance !== -1) ? number_format($location->distance, 0, ',', ' ') . ' ' . get_string('meters', 'block_gps') : get_string('n_a', 'block_gps');
 
     $location->alt = ''; $location->icon = ''; $location->name = ''; $location->url = '';
     if ($location->cmid > 0) {

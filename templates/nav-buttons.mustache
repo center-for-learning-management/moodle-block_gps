@@ -15,10 +15,17 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
   }}
 <div>
-    <a href="#" onclick="block_gps_locate()" class="btn btn-primary ban-default">
-        {{#str }} update_location, block_gps {{/str }}
-    </a>
-    <a href="{{wwwroot}}/blocks/gps/{{goto}}.php?id={{courseid}}" class="btn">
+    {{^is_https}}
+        <p class="alert alert-warning">
+        {{#str}} http_no_geolocation, block_gps {{/str}}
+        </p>
+    {{/is_https}}
+    {{#is_https}}
+        <a href="#" onclick="block_gps_locate()" class="btn btn-primary ban-default">
+            {{#str }} update_location, block_gps {{/str }}
+        </a>
+    {{/is_https}}
+    <a href="{{wwwroot}}/blocks/gps/{{goto}}.php?id={{courseid}}" class="btn ban-default">
         {{gotostr}}
     </a>
 </div>

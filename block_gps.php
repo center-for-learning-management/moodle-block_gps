@@ -45,6 +45,7 @@ class block_gps extends block_base {
             'block_gps/block',
             (object)array(
                 'courseid' => $COURSE->id,
+                'is_https' => self::is_https(),
                 'latitude' => $SESSION->availability_gps_latitude,
                 'longitude' => $SESSION->availability_gps_longitude,
                 'wwwroot' => $CFG->wwwroot,
@@ -58,5 +59,9 @@ class block_gps extends block_base {
     }
     public function has_config() {
         return false;
+    }
+    public static function is_https() {
+        global $CFG;
+        return substr($CFG->wwwroot, 0, 6) == 'https:';
     }
 }

@@ -31,6 +31,7 @@ $string['current_location'] = 'Current location';
 $string['distance'] = 'Distance';
 $string['geolocation'] = 'Geolocation';
 $string['geolocation_not_supported'] = 'Geolocation not supported';
+$string['http_no_geolocation'] = 'You are running this site under http. Geolocation is only supported on https-Sites!';
 $string['item'] = 'Item';
 $string['latitude'] = 'Latitude';
 $string['longitude'] = 'Longitude';
