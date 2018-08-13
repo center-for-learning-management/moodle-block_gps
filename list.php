@@ -114,6 +114,8 @@ foreach($locations AS &$location) {
         $location->longitude = '';
         $location->latitude = get_string('n_a', 'block_gps');
     }
+    $location->accuracy .= ' ' . get_string('meters', 'block_gps');
+    $location->persistent = ($location->persistent) ? get_string('yes') : get_string('no');
 }
 
 echo $OUTPUT->render_from_template(
