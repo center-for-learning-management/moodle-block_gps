@@ -67,7 +67,7 @@ $PAGE->set_pagetype('course-view-' . $course->format);
 $PAGE->set_title(get_string('map', 'block_gps'));
 $PAGE->set_heading(get_string('map', 'block_gps'));
 $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/blocks/gps/js/main.js'));
-$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/blocks/gps/js/leaflet.js'));
+//$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/blocks/gps/js/leaflet.js'));
 $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/gps/css/leaflet.css'));
 
 echo $OUTPUT->header();

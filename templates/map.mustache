@@ -18,7 +18,7 @@
 <div id="{{uniqid}}-map" style="height: 440px; border: 1px solid #AAA;"></div>
 
 {{#js}}
-require(['core/url'], function(url) {
+require(['core/url', 'block_gps/leaflet'], function(url) {
     var markers = [
     {{#markers}}
         {
