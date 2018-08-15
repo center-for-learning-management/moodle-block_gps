@@ -2,10 +2,23 @@ function block_gps_locate() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             function(position){
-                var url = new URL(top.location.href);
-                url.searchParams.append('longitude', position.coords.longitude);
-                url.searchParams.append('latitude', position.coords.latitude);
-                top.location.href = url;
+                require(['core/ajax', 'core/notification', 'core/str'], function(ajax, notification, str) {
+                    ajax.call([{
+                        methodname: 'block_gps_locate',
+                        args: { lat: position.coords.latitude, lon: position.coords.longitude },
+                        done: function(result){
+                            if (result == 'coordinates_set') {
+                                top.location.href = top.location.href;
+                            } else {
+                                var resStr = str.get_string(result, 'block_gps');
+                                $.when(resStr).done(function(localizedEditString) {
+                                     notification.alert(localizedEditString, '');
+                                });
+                            }
+                        },
+                        fail: notification.exception,
+                    }]);
+                });
             }
         );
     } else {

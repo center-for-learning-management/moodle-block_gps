@@ -32,6 +32,7 @@ $string['distance'] = 'Distanz';
 $string['geolocation'] = 'Geoposition';
 $string['geolocation_not_supported'] = 'Geopositionierung wird nicht unterstützt!';
 $string['http_no_geolocation'] = 'Diese Seite wird unter http betrieben. Geodienste sind nur unter https verfügbar!';
+$string['invalid_coordinates'] = 'Ungültige Koordinaten';
 $string['item'] = 'Objekt';
 $string['latitude'] = 'Breitengrad';
 $string['longitude'] = 'Längengrad';

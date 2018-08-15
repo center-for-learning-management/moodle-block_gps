@@ -23,8 +23,14 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version  = 2018081303;
-$plugin->requires = 2014051200;  // Requires Moodle 2.7.
-$plugin->component = 'block_gps';
-$plugin->release = '1.4 (Build: 2018081303)';
-$plugin->maturity = MATURITY_STABLE;
+$functions = array(
+    'block_gps_locate' => array(
+        'classname'   => 'block_gps_ws',
+        'methodname'  => 'locate',
+        'classpath'   => 'blocks/gps/externallib.php',
+        'description' => 'Stores the current geo location',
+        'type'        => 'read',
+        'ajax'        => 1,
+        'services'    => array(MOODLE_OFFICIAL_MOBILE_SERVICE)    // Optional, only available for Moodle 3.1 onwards. List of built-in services (by shortname) where the function will be included.  Services created manually via the Moodle interface are not supported.
+    ),
+);
