@@ -35,7 +35,7 @@ class block_gps extends block_base {
         require_once($CFG->dirroot . '/blocks/gps/lib.php');
         \availability_gps\block_gps_lib::check_coordinates();
 
-        $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/blocks/gps/js/main.js'));
+        //$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/blocks/gps/js/main.js'));
 
         if ($this->content !== null) {
           return $this->content;
@@ -44,6 +44,7 @@ class block_gps extends block_base {
         $this->content->text = $OUTPUT->render_from_template(
             'block_gps/block',
             (object)array(
+                'altitude' => $SESSION->availability_gps_altitude,
                 'courseid' => $COURSE->id,
                 'is_https' => self::is_https(),
                 'latitude' => $SESSION->availability_gps_latitude,

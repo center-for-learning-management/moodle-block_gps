@@ -10,7 +10,8 @@
   "ignore": [
     ".git/*",
     ".DS_Store",
-    ".remote-sync.json"
+    ".remote-sync.json",
+    ".gitignore"
   ],
   "watch": [],
   "transport": "scp",

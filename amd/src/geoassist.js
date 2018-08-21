@@ -4,10 +4,12 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/url', 'blo
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     function(position){
+                        console.log('Sending position', position);
                         ajax.call([{
                             methodname: 'block_gps_locate',
-                            args: { lat: position.coords.latitude, lon: position.coords.longitude },
+                            args: { lat: position.coords.latitude, lon: position.coords.longitude, alt: position.coords.altitude },
                             done: function(result){
+                                console.log('Result', result);
                                 if (result == 'coordinates_set') {
                                     top.location.href = top.location.href;
                                 } else {

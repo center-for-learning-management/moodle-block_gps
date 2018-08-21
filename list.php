@@ -56,7 +56,6 @@ $course->format = course_get_format($course)->get_format();
 $PAGE->set_pagetype('course-view-' . $course->format);
 $PAGE->set_title(get_string('list', 'block_gps'));
 $PAGE->set_heading(get_string('list', 'block_gps'));
-$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/blocks/gps/js/main.js'));
 
 echo $OUTPUT->header();
 

@@ -33,22 +33,25 @@ class block_gps_ws extends external_api {
                 array(
                     'lat' => new external_value(PARAM_FLOAT, 'Latitude', VALUE_DEFAULT, -200),
                     'lon' => new external_value(PARAM_FLOAT, 'Longitude', VALUE_DEFAULT, -200),
+                    'alt' => new external_value(PARAM_INT, 'Altitude', VALUE_DEFAULT, 0),
                 )
         );
     }
-    public static function locate($lat, $lon) {
+    public static function locate($lat, $lon, $alt) {
         global $SESSION;
         $params = self::validate_parameters(
             self::locate_parameters(),
             array(
                 'lat' => $lat,
-                'lon' => $lon
+                'lon' => $lon,
+                'alt' => $alt
             )
         );
 
         if ($params['lat'] > -200 && $params['lon'] > -200) {
             $SESSION->availability_gps_latitude = $params['lat'];
             $SESSION->availability_gps_longitude = $params['lon'];
+            $SESSION->availability_gps_altitude = $params['alt'];
             return 'coordinates_set';
         } else {
             return 'invalid_coordinates';
