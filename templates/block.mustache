@@ -15,11 +15,16 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
   }}
 
+{{#js}}
+require(['block_gps/geoassist'], function(geoassist) {
+    console.log(geoassist);
+});
+{{/js}}
 {{^is_https}}
     {{#str}} http_no_geolocation, block_gps {{/str}}
 {{/is_https}}
 {{#is_https}}
-    <input type="button" onclick="block_gps_locate();" value="{{#str}} update_location, block_gps{{/str}}" />
+    <input type="button" onclick="helper.locate();" value="{{#str}} update_location, block_gps{{/str}}" />
 {{/is_https}}
 {{#longitude}}
     <div>
