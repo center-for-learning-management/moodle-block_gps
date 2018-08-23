@@ -28,10 +28,11 @@ require(['block_gps/geoassist'], function(geoassist) {
 {{/is_https}}
 {{#longitude}}
     <div>
-        {{latitude}}
-        {{longitude}}
+        {{#str}} latitude, block_gps {{/str}} {{latitude}}<br />
+        {{#str}} longitude, block_gps {{/str}} {{longitude}}<br />
         {{#altitude}}
-            {{altitude}}
+            <br />
+            {{#str}} altitude, block_gps {{/str}}  {{altitude}}
         {{/altitude}}
   </div>
 {{/longitude}}

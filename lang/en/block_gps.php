@@ -28,6 +28,7 @@ $string['title'] = 'Geolocation';
 
 
 $string['accuracy'] = 'Accuracy';
+$string['altitude'] = 'Altitude';
 $string['current_location'] = 'Current location';
 $string['distance'] = 'Distance';
 $string['geolocation'] = 'Geolocation';

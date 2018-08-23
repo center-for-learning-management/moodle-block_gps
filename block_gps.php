@@ -27,15 +27,11 @@ class block_gps extends block_base {
     public $content;
 
     public function init() {
+        global $SESSION;
         $this->title = get_string('pluginname', 'block_gps');
     }
     public function get_content() {
         global $CFG, $COURSE, $OUTPUT, $PAGE, $SESSION;
-
-        require_once($CFG->dirroot . '/blocks/gps/lib.php');
-        \availability_gps\block_gps_lib::check_coordinates();
-
-        //$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/blocks/gps/js/main.js'));
 
         if ($this->content !== null) {
           return $this->content;
@@ -44,11 +40,11 @@ class block_gps extends block_base {
         $this->content->text = $OUTPUT->render_from_template(
             'block_gps/block',
             (object)array(
-                'altitude' => $SESSION->availability_gps_altitude,
+                'altitude' => self::get_location('altitude'),
                 'courseid' => $COURSE->id,
                 'is_https' => self::is_https(),
-                'latitude' => $SESSION->availability_gps_latitude,
-                'longitude' => $SESSION->availability_gps_longitude,
+                'latitude' => self::get_location('latitude'),
+                'longitude' => self::get_location('longitude'),
                 'wwwroot' => $CFG->wwwroot,
             )
         );
@@ -64,5 +60,22 @@ class block_gps extends block_base {
     public static function is_https() {
         global $CFG;
         return substr($CFG->wwwroot, 0, 6) == 'https:';
+    }
+    public static function get_location($type) {
+        global $SESSION;
+        switch($type) {
+            case 'altitude':
+                if (!isset($SESSION->availability_gps_altitude)) return false;
+                else return $SESSION->availability_gps_altitude;
+            break;
+            case 'latitude':
+                if (!isset($SESSION->availability_gps_latitude)) return false;
+                else return $SESSION->availability_gps_latitude;
+            break;
+            case 'longitude':
+                if (!isset($SESSION->availability_gps_longitude)) return false;
+                else return $SESSION->availability_gps_longitude;
+            break;
+        }
     }
 }

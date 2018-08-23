@@ -33,7 +33,7 @@ class block_gps_ws extends external_api {
                 array(
                     'lat' => new external_value(PARAM_FLOAT, 'Latitude', VALUE_DEFAULT, -200),
                     'lon' => new external_value(PARAM_FLOAT, 'Longitude', VALUE_DEFAULT, -200),
-                    'alt' => new external_value(PARAM_INT, 'Altitude', VALUE_DEFAULT, 0),
+                    'alt' => new external_value(PARAM_FLOAT, 'Altitude', VALUE_DEFAULT, 0),
                 )
         );
     }

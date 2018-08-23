@@ -28,6 +28,7 @@ $string['title'] = 'Geolocation';
 
 
 $string['accuracy'] = 'Genauigkeit';
+$string['altitude'] = 'Höhe';
 $string['current_location'] = 'Aktuelle Position';
 $string['distance'] = 'Distanz';
 $string['geolocation'] = 'Geoposition';
