@@ -23,8 +23,8 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version  = 2018082300;
+$plugin->version  = 2018091201;
 $plugin->requires = 2014051200;  // Requires Moodle 2.7.
 $plugin->component = 'block_gps';
-$plugin->release = '1.6 (Build: 2018082300)';
+$plugin->release = '1.7 (Build: 2018091201)';
 $plugin->maturity = MATURITY_STABLE;

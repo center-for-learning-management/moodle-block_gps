@@ -21,9 +21,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
-
 namespace block_gps\privacy;
+use core_privacy\local\metadata\collection;
+
+defined('MOODLE_INTERNAL') || die;
 
 class provider implements \core_privacy\local\metadata\provider {
     public static function get_metadata(collection $collection) : collection {
@@ -40,20 +41,19 @@ class provider implements \core_privacy\local\metadata\provider {
 
         return $collection;
     }
-}
+    /**
+     * Get the list of contexts that contain user information for the specified user.
+     *
+     * @param   int           $userid       The user to search.
+     * @return  contextlist   $contextlist  The list of contexts used in this plugin.
+    */
+    public static function get_contexts_for_userid(int $userid) : contextlist {
+        $contextlist = new \core_privacy\local\request\contextlist();
 
-/**
- * Get the list of contexts that contain user information for the specified user.
- *
- * @param   int           $userid       The user to search.
- * @return  contextlist   $contextlist  The list of contexts used in this plugin.
-*/
-public static function get_contexts_for_userid(int $userid) : contextlist {
-    $contextlist = new \core_privacy\local\request\contextlist();
+        $sql = "SELECT * FROM {block_gps_reached} WHERE userid=?";
+        $params = ['userid' => $userid ];
+        $contextlist->add_from_sql($sql, $params);
 
-    $sql = "SELECT * FROM {block_gps_reached} WHERE userid=?";
-    $params = ['userid' => $userid ];
-    $contextlist->add_from_sql($sql, $params);
-
-    return $contextlist;
+        return $contextlist;
+    }
 }

@@ -82,7 +82,6 @@ echo $OUTPUT->render_from_template(
         'goto' => 'list',
         'gotostr' => get_string('list', 'block_gps'),
         'is_https' => \block_gps::is_https(),
-        'wwwroot' => $CFG->wwwroot
     )
 );
 
