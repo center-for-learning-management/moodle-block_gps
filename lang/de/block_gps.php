@@ -22,6 +22,7 @@
  */
 
 $string['addinstance'] = 'Block Geolocation hinzufügen';
+$string['gps:myaddinstance'] = 'Block Geolocation hinzufügen';
 $string['description'] = 'Verfügbarkeit auf Basis der geografischen Position bestimmen.';
 $string['pluginname'] = 'Geolocation Block';
 $string['title'] = 'Geolocation';
