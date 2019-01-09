@@ -22,6 +22,7 @@
  */
 
 $string['addinstance'] = 'Add block geolocation';
+$string['gps:addinstance'] = 'Add block geolocation';
 $string['gps:myaddinstance'] = 'Add block geolocation';
 $string['description'] = 'Check availability against current GPS coordinates';
 $string['pluginname'] = 'Geolocation Block';
