@@ -43,10 +43,10 @@ $urlparams = array('id' => $course->id);
 $modinfo = get_fast_modinfo($course);
 $locations = \availability_gps\block_gps_lib::load_positions($course->id);
 
-if (isset($SESSION->availability_gps_longitude)) {
+if (!empty(block_gps::get_location('longitude'))) {
     $locations[] = (object) array(
-        'longitude' => $SESSION->availability_gps_longitude,
-        'latitude' => $SESSION->availability_gps_latitude,
+        'longitude' => block_gps::get_location('longitude'),
+        'latitude' => block_gps::get_location('latitude'),
         'type' => 'self',
         'cmid' => 0,
         'sectionid' => 0,
@@ -71,8 +71,8 @@ $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/gps/css/leaflet.css
 echo $OUTPUT->header();
 
 $userposition = (object)array(
-    'longitude' => $SESSION->availability_gps_longitude,
-    'latitude' => $SESSION->availability_gps_latitude,
+    'longitude' => block_gps::get_location('longitude'),
+    'latitude' => block_gps::get_location('latitude'),
 );
 
 echo $OUTPUT->render_from_template(

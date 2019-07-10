@@ -23,6 +23,8 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+require_once($CFG->dirroot . '/blocks/moodleblock.class.php');
+
 class block_gps extends block_base {
     public $content;
 

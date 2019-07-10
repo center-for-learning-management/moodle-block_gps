@@ -60,8 +60,8 @@ $PAGE->set_heading(get_string('list', 'block_gps'));
 echo $OUTPUT->header();
 
 $userposition = (object)array(
-    'longitude' => $SESSION->availability_gps_longitude,
-    'latitude' => $SESSION->availability_gps_latitude,
+    'longitude' => block_gps::get_location('longitude'),
+    'latitude' => block_gps::get_location('latitude'),
 );
 
 echo $OUTPUT->render_from_template(
