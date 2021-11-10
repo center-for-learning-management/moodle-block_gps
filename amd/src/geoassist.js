@@ -1,28 +1,38 @@
 define(['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/url', 'block_gps/leaflet'], function($, ajax, notification, str, url) {
     return {
+        locateinterval: null,
         locate: function(){
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    function(position){
-                        ajax.call([{
-                            methodname: 'block_gps_locate',
-                            args: { lat: position.coords.latitude, lon: position.coords.longitude, alt: position.coords.altitude },
-                            done: function(result){
-                                if (result == 'coordinates_set') {
-                                    top.location.href = top.location.href;
-                                } else {
-                                    var resStr = str.get_string(result, 'block_gps');
-                                    $.when(resStr).done(function(localizedEditString) {
-                                         notification.alert(localizedEditString, '');
-                                    });
-                                }
-                            },
-                            fail: notification.exception,
-                        }]);
-                    }
-                );
-            } else {
-                alert('geolocation_not_supported');
+            if (typeof(this.locateinterval) !== 'undefined') {
+                if (navigator.geolocation) {
+                    this.locateinterval = setInterval(function() {
+                        navigator.geolocation.getCurrentPosition(
+                            function(position){
+                                ajax.call([{
+                                    methodname: 'block_gps_locate',
+                                    args: { lat: position.coords.latitude, lon: position.coords.longitude, alt: position.coords.altitude },
+                                    done: function(result){
+                                        if (result == 'coordinates_set') {
+                                            console.log('User moved more than 5m since last position, reloading page');
+                                            top.location.href = top.location.href;
+                                        } else if (result == 'moved_less_than_5m') {
+                                            //alert('less than 5m');
+                                            console.log('User moved less than 5m since last position');
+                                        } else {
+                                            console.log('There was an error, show notification');
+                                            var resStr = str.get_string(result, 'block_gps');
+                                            $.when(resStr).done(function(localizedEditString) {
+                                                 notification.alert(localizedEditString, '');
+                                            });
+                                        }
+                                    },
+                                    fail: notification.exception,
+                                }]);
+                            }
+                        );
+                    }, 5000);
+                } else {
+                    alert('geolocation_not_supported');
+                }
             }
         },
         current: function(src) {

@@ -38,7 +38,7 @@ class block_gps_ws extends external_api {
         );
     }
     public static function locate($lat, $lon, $alt) {
-        global $SESSION;
+        global $CFG,$SESSION;
         $params = self::validate_parameters(
             self::locate_parameters(),
             array(
@@ -48,11 +48,37 @@ class block_gps_ws extends external_api {
             )
         );
 
-        if ($params['lat'] > -200 && $params['lon'] > -200) {
+        if (empty($SESSION->availability_gps_longitude)) {
+            $position1 = array(
+                'longitude' => 0,
+                'latitude' => 0,
+            );
+        } else {
+            $position1 = array(
+                'longitude' => $SESSION->availability_gps_longitude,
+                'latitude' => $SESSION->availability_gps_latitude,
+            );
+        }
+
+        $position2 = array(
+            'longitude' => $params['lon'],
+            'latitude' => $params['lat'],
+        );
+
+        require_once("$CFG->dirroot/blocks/gps/lib.php");
+        $distance = \availability_gps\block_gps_lib::get_distance(
+            (object)$position1,
+            (object)$position2,
+            0
+        );
+
+        if ($distance > 5 && $params['lat'] > -200 && $params['lon'] > -200) {
             $SESSION->availability_gps_latitude = $params['lat'];
             $SESSION->availability_gps_longitude = $params['lon'];
             $SESSION->availability_gps_altitude = $params['alt'];
             return 'coordinates_set';
+        } else if($distance < 5) {
+            return 'moved_less_than_5m';
         } else {
             return 'invalid_coordinates';
         }

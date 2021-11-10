@@ -42,11 +42,11 @@ class block_gps extends block_base {
         $this->content->text = $OUTPUT->render_from_template(
             'block_gps/block',
             (object)array(
-                'altitude' => self::get_location('altitude'),
+                'altitude' => round(self::get_location('altitude'), 0) . ' ' . get_string('meters', 'block_gps'),
                 'courseid' => $COURSE->id,
                 'is_https' => self::is_https(),
-                'latitude' => self::get_location('latitude'),
-                'longitude' => self::get_location('longitude'),
+                'latitude' => round(self::get_location('latitude'), 5),
+                'longitude' => round(self::get_location('longitude'), 5),
                 'wwwroot' => $CFG->wwwroot,
             )
         );

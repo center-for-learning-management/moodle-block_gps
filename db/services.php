@@ -31,6 +31,6 @@ $functions = array(
         'description' => 'Stores the current geo location',
         'type'        => 'read',
         'ajax'        => 1,
-        'services'    => array(MOODLE_OFFICIAL_MOBILE_SERVICE)    // Optional, only available for Moodle 3.1 onwards. List of built-in services (by shortname) where the function will be included.  Services created manually via the Moodle interface are not supported.
+        'services'      => [MOODLE_OFFICIAL_MOBILE_SERVICE, 'local_mobile'],
     ),
 );
