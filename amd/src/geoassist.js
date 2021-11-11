@@ -1,6 +1,6 @@
 define(['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/url', 'core/modal_factory', 'block_gps/leaflet'], function($, AJAX, NOTIFICATION, STR, URL, ModalFactory) {
     return {
-        debug: true,
+        debug: false,
         lasttrackedposition: { 'altitude': 0, 'latitude': 0, 'longitude': 0},
         locateinterval: null,
         locateintervalrunning: false,
