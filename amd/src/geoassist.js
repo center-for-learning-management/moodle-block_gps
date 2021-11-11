@@ -2,7 +2,11 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/url', 'blo
     return {
         lasttrackedposition: { 'altitude': 0, 'latitude': 0, 'longitude': 0},
         locateinterval: null,
-        locate: function(){
+        locate: function(altitude, latitude, longitude){
+            if (typeof(altitude) !== 'undefined') { this.lasttrackedposition.altitude = altitude; }
+            if (typeof(latitude) !== 'undefined') { this.lasttrackedposition.latitude = latitude; }
+            if (typeof(longitude) !== 'undefined') { this.lasttrackedposition.longitude = longitude; }
+            console.log('initialized with lasttrackedposition ', this.lasttrackedposition);
             var GEOASSIST = this;
             if (typeof(this.locateinterval) !== 'undefined') {
                 if (navigator.geolocation) {
@@ -12,7 +16,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/url', 'blo
                                 position = position.coords;
                                 //console.log('My position is ', position);
                                 var distance = GEOASSIST.distance(GEOASSIST.lasttrackedposition, position);
-                                //console.log('My distance is ', distance);
+                                //console.log('Moved distance is ', distance);
                                 if (distance > 5) {
                                     ajax.call([{
                                         methodname: 'block_gps_locate',
