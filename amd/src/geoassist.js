@@ -1,34 +1,43 @@
 define(['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/url', 'block_gps/leaflet'], function($, ajax, notification, str, url) {
     return {
+        lasttrackedposition: { 'altitude': 0, 'latitude': 0, 'longitude': 0},
         locateinterval: null,
         locate: function(){
+            var GEOASSIST = this;
             if (typeof(this.locateinterval) !== 'undefined') {
                 if (navigator.geolocation) {
                     this.locateinterval = setInterval(function() {
                         navigator.geolocation.getCurrentPosition(
                             function(position){
-                                ajax.call([{
-                                    methodname: 'block_gps_locate',
-                                    args: { lat: position.coords.latitude, lon: position.coords.longitude, alt: position.coords.altitude },
-                                    done: function(result){
-                                        if (result == 'coordinates_set') {
-                                            console.log('User moved more than 5m since last position, reloading page');
-                                            top.location.href = top.location.href;
-                                        } else if (result == 'moved_less_than_5m') {
-                                            //alert('less than 5m');
-                                            console.log('User moved less than 5m since last position');
-                                        } else {
-                                            console.log('There was an error');
-                                            /*
-                                            var resStr = str.get_string(result, 'block_gps');
-                                            $.when(resStr).done(function(localizedEditString) {
-                                                 notification.alert(localizedEditString, '');
-                                            });
-                                            */
-                                        }
-                                    },
-                                    fail: notification.exception,
-                                }]);
+                                position = position.coords;
+                                console.log('My position is ', position);
+                                var distance = GEOASSIST.distance(GEOASSIST.lasttrackedposition, position);
+                                console.log('My distance is ', distance);
+                                if (distance > 5) {
+                                    ajax.call([{
+                                        methodname: 'block_gps_locate',
+                                        args: { lat: position.latitude, lon: position.longitude, alt: position.altitude },
+                                        done: function(result){
+                                            GEOASSIST.lasttrackedposition = position;
+                                            if (result == 'coordinates_set') {
+                                                console.log('User moved more than 5m since last position, reloading page');
+                                                top.location.href = top.location.href;
+                                            } else if (result == 'moved_less_than_5m') {
+                                                //alert('less than 5m');
+                                                console.log('User moved less than 5m since last position');
+                                            } else {
+                                                console.log('There was an error');
+                                                /*
+                                                var resStr = str.get_string(result, 'block_gps');
+                                                $.when(resStr).done(function(localizedEditString) {
+                                                     notification.alert(localizedEditString, '');
+                                                });
+                                                */
+                                            }
+                                        },
+                                        fail: notification.exception,
+                                    }]);
+                                }
                             }
                         );
                     }, 5000);
@@ -52,7 +61,24 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/url', 'blo
                 M.availability_gps.locatebtn.value = M.str.availability_gps.geolocation_not_supported;
             }
         },
+        deg2rad: function(degrees) {
+            return degrees * (Math.PI/180);
+        },
+        distance: function(position1, position2, decimals) {
+            if (typeof(decimals) === 'undefined') {
+                decimals = 0;
+            }
 
+            var lat1 = this.deg2rad(position1.latitude);
+            var lon1 = this.deg2rad(position1.longitude);
+            var lat2 = this.deg2rad(position2.latitude);
+            var lon2 = this.deg2rad(position2.longitude);
+
+            latDelta = lat2 - lat1;
+            lonDelta = lon2 - lon1;
+            angle = 2*Math.asin(Math.sqrt(Math.pow(Math.sin(latDelta / 2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(lonDelta / 2), 2)));
+            return Math.round(angle * 6378.388 * 1000, decimals);
+        },
         init: function(toggle) {
             var GEOASSIST = this;
             var lat = $('[name=latitude]').val();

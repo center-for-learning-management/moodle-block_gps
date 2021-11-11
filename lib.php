@@ -63,7 +63,7 @@ class block_gps_lib  {
         $latDelta = $lat2 - $lat1;
         $lonDelta = $lon2 - $lon1;
         $angle = 2*asin(sqrt(pow(sin($latDelta / 2), 2) + cos($lat1) * cos($lat2) * pow(sin($lonDelta / 2), 2)));
-        return round($angle * 6378.388 * 1000, 0);
+        return round($angle * 6378.388 * 1000, $decimals);
     }
     /**
      * Checks a list of positions if coordinates are valid.
