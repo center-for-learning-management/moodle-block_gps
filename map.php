@@ -22,14 +22,11 @@
  */
 
 require_once('../../config.php');
-require_once($CFG->dirroot . '/blocks/gps/lib.php');
 require_once($CFG->dirroot . '/course/format/lib.php');
 require_once($CFG->libdir . '/completionlib.php');
 require_once($CFG->dirroot . '/availability/condition/gps/classes/condition.php');
 require_once($CFG->dirroot . '/availability/classes/info_module.php');
 require_once($CFG->dirroot . '/availability/classes/info_section.php');
-
-\availability_gps\block_gps_lib::check_coordinates();
 
 $id = optional_param('id', 0, PARAM_INT);
 $params = array();
@@ -41,12 +38,12 @@ if (!empty($id)) {
 $course = $DB->get_record('course', $params, '*', MUST_EXIST);
 $urlparams = array('id' => $course->id);
 $modinfo = get_fast_modinfo($course);
-$locations = \availability_gps\block_gps_lib::load_positions($course->id);
+$locations = \block_gps\locallib::load_positions($course->id);
 
-if (!empty(block_gps::get_location('longitude'))) {
+if (!empty(\block_gps\locallib::get_location('longitude'))) {
     $locations[] = (object) array(
-        'longitude' => block_gps::get_location('longitude'),
-        'latitude' => block_gps::get_location('latitude'),
+        'longitude' => \block_gps\locallib::get_location('longitude'),
+        'latitude' => \block_gps\locallib::get_location('latitude'),
         'type' => 'self',
         'cmid' => 0,
         'sectionid' => 0,
@@ -71,8 +68,8 @@ $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/blocks/gps/css/leaflet.css
 echo $OUTPUT->header();
 
 $userposition = (object)array(
-    'longitude' => block_gps::get_location('longitude'),
-    'latitude' => block_gps::get_location('latitude'),
+    'longitude' => \block_gps\locallib::get_location('longitude'),
+    'latitude' => \block_gps\locallib::get_location('latitude'),
 );
 
 echo $OUTPUT->render_from_template(
@@ -80,8 +77,9 @@ echo $OUTPUT->render_from_template(
     (object)array(
         'courseid' => $course->id,
         'goto' => 'list',
+        'gotomarker' => 'fa-list',
         'gotostr' => get_string('list', 'block_gps'),
-        'is_https' => \block_gps::is_https(),
+        'is_https' => \block_gps\locallib::is_https(),
         'wwwroot' => $CFG->wwwroot,
     )
 );
@@ -107,7 +105,7 @@ foreach($locations AS &$location) {
         'longitude' => $location->longitude,
         'latitude' => $location->latitude,
     );
-    $location->distance = \availability_gps\block_gps_lib::get_distance($userposition, $conditionposition, 2);
+    $location->distance = \block_gps\locallib::get_distance($userposition, $conditionposition, 2);
     $chkdist = ($location->distance < $location->accuracy);
     $location->distlbl = ($location->distance !== -1) ? number_format($location->distance, 0, ',', ' ') . ' ' . get_string('meters', 'block_gps') : get_string('n_a', 'block_gps');
 

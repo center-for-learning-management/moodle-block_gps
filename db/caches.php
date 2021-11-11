@@ -23,8 +23,14 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version  = 2021111103;
-$plugin->requires = 2014051200;  // Requires Moodle 2.7.
-$plugin->component = 'block_gps';
-$plugin->release = '2.2.2';
-$plugin->maturity = MATURITY_STABLE;
+$definitions = array(
+    'application' => array(
+        'mode' => cache_store::MODE_APPLICATION,
+    ),
+    'request' => array(
+        'mode' => cache_store::MODE_REQUEST,
+    ),
+    'session' => array(
+        'mode' => cache_store::MODE_SESSION,
+    )
+);

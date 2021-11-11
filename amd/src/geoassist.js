@@ -1,53 +1,105 @@
-define(['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/url', 'block_gps/leaflet'], function($, ajax, notification, str, url) {
+define(['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/url', 'core/modal_factory', 'block_gps/leaflet'], function($, AJAX, NOTIFICATION, STR, URL, ModalFactory) {
     return {
+        debug: true,
         lasttrackedposition: { 'altitude': 0, 'latitude': 0, 'longitude': 0},
         locateinterval: null,
-        locate: function(altitude, latitude, longitude){
+        locateintervalrunning: false,
+        /**
+         * Start an interval for requesting the location.
+         * @param ms milliseconds between requests
+         */
+        interval: function(ms) {
+            var GEOASSIST = this;
+            if (this.debug) console.log('block_gps/geoassist::interval(ms)', ms);
+            if (ms > 0) {
+                $('#block_gps_interval_toggler').find('i.fa').removeClass('fa-toggle-off').addClass('fa-toggle-on');
+                clearInterval(this.locateinterval);
+                this.locateinterval = setInterval(function() { GEOASSIST.locate(); }, ms);
+                this.locateintervalrunning = true;
+            } else if (typeof(this.locateinterval) !== 'undefined') {
+                $('#block_gps_interval_toggler').find('i.fa').removeClass('fa-toggle-on').addClass('fa-toggle-off');
+                clearInterval(this.locateinterval);
+                this.locateinterval = null;
+                this.locateintervalrunning = false;
+            }
+            AJAX.call([{
+                methodname: 'block_gps_setinterval',
+                args: { ms: ms },
+                done: function(result){},
+                fail: NOTIFICATION.exception,
+            }]);
+        },
+        intervalToggle: function() {
+            if (this.debug) console.log('block_gps/geoassist::intervalToggle()');
+            if (this.locateintervalrunning) {
+                this.interval(0);
+            } else {
+                this.interval(5000);
+            }
+        },
+        /**
+         * Let Javascript now the last position Moodle knew.
+         * @param altitude
+         * @param latitude
+         * @param longitude
+         */
+        locateInit: function(altitude, latitude, longitude) {
+            if (this.debug) console.log('block_gps/geoassist::locateInit(altitude, latitude, longitude)', altitude, latitude, longitude);
             if (typeof(altitude) !== 'undefined') { this.lasttrackedposition.altitude = altitude; }
             if (typeof(latitude) !== 'undefined') { this.lasttrackedposition.latitude = latitude; }
             if (typeof(longitude) !== 'undefined') { this.lasttrackedposition.longitude = longitude; }
-            console.log('initialized with lasttrackedposition ', this.lasttrackedposition);
+        },
+        /**
+         * Ask the browser for the current location.
+         */
+        locate: function(once){
+            if (this.debug) console.log('block_gps/geoassist::locate()');
             var GEOASSIST = this;
-            if (typeof(this.locateinterval) !== 'undefined') {
-                if (navigator.geolocation) {
-                    this.locateinterval = setInterval(function() {
-                        navigator.geolocation.getCurrentPosition(
-                            function(position){
-                                position = position.coords;
-                                //console.log('My position is ', position);
-                                var distance = GEOASSIST.distance(GEOASSIST.lasttrackedposition, position);
-                                //console.log('Moved distance is ', distance);
-                                if (distance > 5) {
-                                    ajax.call([{
-                                        methodname: 'block_gps_locate',
-                                        args: { lat: position.latitude, lon: position.longitude, alt: position.altitude },
-                                        done: function(result){
-                                            GEOASSIST.lasttrackedposition = position;
-                                            if (result == 'coordinates_set') {
-                                                //console.log('User moved more than 5m since last position, reloading page');
-                                                top.location.href = top.location.href;
-                                            } else if (result == 'moved_less_than_5m') {
-                                                //alert('less than 5m');
-                                                //console.log('User moved less than 5m since last position');
-                                            } else {
-                                                //console.log('There was an error');
-                                                /*
-                                                var resStr = str.get_string(result, 'block_gps');
-                                                $.when(resStr).done(function(localizedEditString) {
-                                                     notification.alert(localizedEditString, '');
-                                                });
-                                                */
-                                            }
-                                        },
-                                        fail: notification.exception,
-                                    }]);
+            if (navigator.geolocation) {
+                if (GEOASSIST.debug) console.log('navigator.geolocation exists');
+                navigator.geolocation.getCurrentPosition(
+                    function(position){
+                        position = position.coords;
+                        if (GEOASSIST.debug) console.log('retrieved position', position);
+                        var distance = GEOASSIST.distance(GEOASSIST.lasttrackedposition, position);
+                        if (GEOASSIST.debug) console.log('distance since last tracked position', distance);
+
+                        if (distance > 5) {
+                            var posdata = { lat: position.latitude, lon: position.longitude, alt: position.altitude };
+                            AJAX.call([{
+                                methodname: 'block_gps_locate',
+                                args: posdata,
+                                done: function(result){
+                                    if (GEOASSIST.debug) console.log('moodle informed about position', posdata, ' replied with', result);
+                                    GEOASSIST.lasttrackedposition = position;
+                                    if (result == 'coordinates_set') {
+                                        if (GEOASSIST.debug) console.log('Reloading page');
+                                        location.reload();
+                                    }
+                                },
+                                fail: NOTIFICATION.exception,
+                            }]);
+                        } else if (typeof(once) !== 'undefined' && once) {
+                            // Show a modal info for 3 seconds.
+                            STR.get_strings([
+                                    {'key' : 'location_not_changed:title', component: 'block_gps' },
+                                    {'key' : 'location_not_changed:body', component: 'block_gps' },
+                                ]).done(function(s) {
+                                    ModalFactory.create({
+                                        type: ModalFactory.types.OK,
+                                        title: s[0],
+                                        body: s[1],
+                                    }).then(function(modal) {
+                                        modal.show();
+                                        setTimeout(function() { modal.hide(); }, 2000);
+                                    });
                                 }
-                            }
-                        );
-                    }, 5000);
-                } else {
-                    alert('geolocation_not_supported');
-                }
+                            ).fail(NOTIFICATION.exception);
+                        }
+                    }
+                );
+            } else {
+                alert('geolocation_not_supported');
             }
         },
         current: function(src) {
@@ -114,7 +166,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/url', 'blo
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
                     subdomains: ['a','b','c']
                 }).addTo( M.availability_gps.map );
-                var iconUrl = '' + url.relativeUrl('/blocks/gps/pix/google-maps-pin-blue.svg');
+                var iconUrl = '' + URL.relativeUrl('/blocks/gps/pix/google-maps-pin-blue.svg');
                 var icon = L.icon({
                     iconUrl: iconUrl,
                     iconRetinaUrl: iconUrl,

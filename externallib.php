@@ -38,7 +38,6 @@ class block_gps_ws extends external_api {
         );
     }
     public static function locate($lat, $lon, $alt) {
-        global $CFG,$SESSION;
         $params = self::validate_parameters(
             self::locate_parameters(),
             array(
@@ -48,15 +47,15 @@ class block_gps_ws extends external_api {
             )
         );
 
-        if (empty($SESSION->availability_gps_longitude)) {
+        if (empty(\block_gps\locallib::get_location('latitude'))) {
             $position1 = array(
                 'longitude' => 0,
                 'latitude' => 0,
             );
         } else {
             $position1 = array(
-                'longitude' => $SESSION->availability_gps_longitude,
-                'latitude' => $SESSION->availability_gps_latitude,
+                'longitude' => \block_gps\locallib::get_location('longitude'),
+                'latitude' => \block_gps\locallib::get_location('latitude'),
             );
         }
 
@@ -65,17 +64,14 @@ class block_gps_ws extends external_api {
             'latitude' => $params['lat'],
         );
 
-        require_once("$CFG->dirroot/blocks/gps/lib.php");
-        $distance = \availability_gps\block_gps_lib::get_distance(
+        $distance = \block_gps\locallib::get_distance(
             (object)$position1,
             (object)$position2,
             0
         );
 
         if ($distance > 5 && $params['lat'] > -200 && $params['lon'] > -200) {
-            $SESSION->availability_gps_latitude = $params['lat'];
-            $SESSION->availability_gps_longitude = $params['lon'];
-            $SESSION->availability_gps_altitude = $params['alt'];
+            \block_gps\locallib::set_location($params['lat'], $params['lon'], $params['alt']);
             return 'coordinates_set';
         } else if($distance < 5) {
             return 'moved_less_than_5m';
@@ -84,6 +80,32 @@ class block_gps_ws extends external_api {
         }
     }
     public static function locate_returns() {
+        return new external_value(PARAM_TEXT, 'Error-Messages if occured');
+    }
+
+    /**
+     * Store the desired interval.
+     * @return checked parameters
+    **/
+    public static function setinterval_parameters() {
+        return new external_function_parameters(
+            array(
+                'ms' => new external_value(PARAM_INT, 'Milliseconds'),
+            )
+        );
+    }
+    public static function setinterval($ms) {
+        global $CFG;
+        $params = self::validate_parameters(
+            self::setinterval_parameters(),
+            array(
+                'ms' => $ms
+            )
+        );
+        \block_gps\locallib::cache_set('session', 'setinterval', $params['ms']);
+        return 'ok';
+    }
+    public static function setinterval_returns() {
         return new external_value(PARAM_TEXT, 'Error-Messages if occured');
     }
 }

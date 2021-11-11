@@ -22,11 +22,13 @@
         </p>
     {{/is_https}}
     {{#is_https}}
-        <a href="#" onclick="require(['block_gps/geoassist'], function(helper) { helper.locate(); });" class="btn btn-primary ban-default">
+        <a href="#" onclick="require(['block_gps/geoassist'], function(helper) { helper.locate(true); });" class="btn btn-primary ban-default">
+            <i class="fa fa-map-marker"></i>
             {{#str }} update_location, block_gps {{/str }}
         </a>
     {{/is_https}}
-    <a href="{{wwwroot}}/blocks/gps/{{goto}}.php?id={{courseid}}" class="btn ban-default">
+    <a href="{{wwwroot}}/blocks/gps/{{goto}}.php?id={{courseid}}" class="btn btn-secondary">
+        <i class="fa {{gotomarker}}"></i>
         {{gotostr}}
     </a>
 </div>

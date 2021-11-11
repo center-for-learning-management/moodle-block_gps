@@ -15,35 +15,66 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    block_gps
- * @copyright  2018 Digital Education Society (http://www.dibig.at)
- * @author     Robert Schrenk
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   block_gps
+ * @copyright  2021 Zentrum für Lernmanagement (www.lernmanagement.at)
+ * @author    Robert Schrenk
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace availability_gps;
+namespace block_gps;
 
 defined('MOODLE_INTERNAL') || die;
 
-class block_gps_lib  {
+class locallib {
+    private static $caches = [];
     /**
-     * Checks if coordinates have been sent via get request.
-     * Redirects to the page without coordinates.
-    **/
-    public static function check_coordinates() {
-        global $SESSION;
-        $longitude = optional_param('longitude', -200, PARAM_FLOAT);
-        $latitude = optional_param('latitude', -200, PARAM_FLOAT);
-
-        if ($longitude > -180 && $longitude < 180 && $latitude > -180 && $latitude < 180) {
-            $SESSION->availability_gps_longitude = $longitude;
-            $SESSION->availability_gps_latitude = $latitude;
-            $params = $_GET;
-            unset($params['longitude']);
-            unset($params['latitude']);
-            $url = new \moodle_url($_SERVER['PHP_SELF'], $params);
-            redirect($url);
+     * Retrieve a key from cache.
+     * @param cache cache object to use (application or session)
+     * @param key the key.
+     * @return whatever is in the cache.
+     */
+    public static function cache_get($cache, $key) {
+        if (!in_array($cache, [ 'application', 'request', 'session'])){
+            throw new \moodle_exception('invalid cache type requested');
         }
+        if (empty(self::$caches[$cache])) {
+            self::$caches[$cache] = \cache::make('block_gps', $cache);
+        }
+        $value = self::$caches[$cache]->get($key);
+        return $value;
+    }
+    /**
+     * Set a cache object.
+     * @param cache cache object to use (application or session)
+     * @param key the key.
+     * @param value the value.
+     * @param delete whether or not the key should be removed from cache.
+     */
+    public static function cache_set($cache, $key, $value, $delete = false) {
+        if (!in_array($cache, [ 'application', 'request', 'session'])) {
+            throw new \moodle_exception('invalid cache type requested');
+        }
+        if (empty(self::$caches[$cache])) {
+            self::$caches[$cache] = \cache::make('block_gps', $cache);
+        }
+
+        if ($delete) {
+            self::$caches[$cache]->delete($key);
+        } else {
+            self::$caches[$cache]->set($key, $value);
+        }
+    }
+
+    /**
+     * Checks a list of positions if coordinates are valid.
+     * @param positions Array containing position objects
+    **/
+    private static function check_positions($positions) {
+        foreach($positions AS $position) {
+            if (!isset($position->longitude) || $position->longitude < -180 || $position->longitude > 180) return false;
+            if (!isset($position->latitude) || $position->latitude < -180 || $position->latitude > 180) return false;
+        }
+        return true;
     }
     /**
      * Calculates the distance between two positions
@@ -65,16 +96,26 @@ class block_gps_lib  {
         $angle = 2*asin(sqrt(pow(sin($latDelta / 2), 2) + cos($lat1) * cos($lat2) * pow(sin($lonDelta / 2), 2)));
         return round($angle * 6378.388 * 1000, $decimals);
     }
-    /**
-     * Checks a list of positions if coordinates are valid.
-     * @param positions Array containing position objects
-    **/
-    private static function check_positions($positions) {
-        foreach($positions AS $position) {
-            if (!isset($position->longitude) || $position->longitude < -180 || $position->longitude > 180) return false;
-            if (!isset($position->latitude) || $position->latitude < -180 || $position->latitude > 180) return false;
+    public static function get_location($type = "", $default = null) {
+
+        if (empty($type)) {
+            return (object) [
+                'altitude' => self::get_location('altitude'),
+                'latitude' => self::get_location('latitude'),
+                'longitude' => self::get_location('longitude'),
+            ];
+        } else {
+            $var = \block_gps\locallib::cache_get("session", $type);
+            if (!empty($var)) return $var;
+            elseif (isset($default)) return $default;
+            else return false;
         }
-        return true;
+
+    }
+
+    public static function is_https() {
+        global $CFG;
+        return substr($CFG->wwwroot, 0, 6) == 'https:';
     }
     /**
      * Loads all conditions from sections and modules in a course and returns a list.
@@ -127,5 +168,11 @@ class block_gps_lib  {
         }
 
         return $positions;
+    }
+
+    public static function set_location($latitude, $longitude, $altitude) {
+        self::cache_set("session", "latitude", $latitude);
+        self::cache_set("session", "longitude", $longitude);
+        self::cache_set("session", "altitude", $altitude);
     }
 }

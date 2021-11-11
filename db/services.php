@@ -33,4 +33,13 @@ $functions = array(
         'ajax'        => 1,
         'services'      => [MOODLE_OFFICIAL_MOBILE_SERVICE, 'local_mobile'],
     ),
+    'block_gps_setinterval' => array(
+        'classname'   => 'block_gps_ws',
+        'methodname'  => 'setinterval',
+        'classpath'   => 'blocks/gps/externallib.php',
+        'description' => 'Let moodle know that we are using an interval',
+        'type'        => 'read',
+        'ajax'        => 1,
+        'services'      => [MOODLE_OFFICIAL_MOBILE_SERVICE, 'local_mobile'],
+    ),
 );
