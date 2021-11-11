@@ -10,9 +10,9 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/url', 'blo
                         navigator.geolocation.getCurrentPosition(
                             function(position){
                                 position = position.coords;
-                                console.log('My position is ', position);
+                                //console.log('My position is ', position);
                                 var distance = GEOASSIST.distance(GEOASSIST.lasttrackedposition, position);
-                                console.log('My distance is ', distance);
+                                //console.log('My distance is ', distance);
                                 if (distance > 5) {
                                     ajax.call([{
                                         methodname: 'block_gps_locate',
@@ -20,13 +20,13 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/url', 'blo
                                         done: function(result){
                                             GEOASSIST.lasttrackedposition = position;
                                             if (result == 'coordinates_set') {
-                                                console.log('User moved more than 5m since last position, reloading page');
+                                                //console.log('User moved more than 5m since last position, reloading page');
                                                 top.location.href = top.location.href;
                                             } else if (result == 'moved_less_than_5m') {
                                                 //alert('less than 5m');
-                                                console.log('User moved less than 5m since last position');
+                                                //console.log('User moved less than 5m since last position');
                                             } else {
-                                                console.log('There was an error');
+                                                //console.log('There was an error');
                                                 /*
                                                 var resStr = str.get_string(result, 'block_gps');
                                                 $.when(resStr).done(function(localizedEditString) {
