@@ -27,9 +27,9 @@
   </thead>
   <tbody>
       {{#items}}
-      <tr data-available="{{available}}" style="{{^available}} background-color: rgba(200, 0, 0, 0.4) !important; {{/available}}">
+      <tr data-available="{{available}}" style="{{^available}} color: darkgray !important; {{/available}}">
           <td>
-              <a href="{{url}}">
+              <a href="{{url}}" style="{{^available}} color: darkgray !important; {{/available}}">
                   <img src="{{icon}}" alt="{{alt}}" style="max-height: 1em;" />
                   {{name}}
               </a>

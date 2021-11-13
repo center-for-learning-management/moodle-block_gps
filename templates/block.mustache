@@ -15,82 +15,90 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
   }}
 
-{{^is_https}}
-    <div class="alert alert-danger">{{#str}} http_no_geolocation, block_gps {{/str}}</div>
-{{/is_https}}
-{{#is_https}}
-    <div class="row">
-        <div class="col-md-12">
-            <strong>{{#str}} update_location, block_gps{{/str}}</strong>
+<div class="block_gps_body">
+    {{^is_https}}
+        <div class="alert alert-danger">{{#str}} http_no_geolocation, block_gps {{/str}}</div>
+    {{/is_https}}
+    {{#is_https}}
+        <div>
+            <div class="row">
+                <div class="title">
+                    <strong>{{#str}} update_location, block_gps{{/str}}</strong>
+                </div>
+            </div>
+            <div class="row">
+                <div>
+                    <a href="#" onclick="require(['block_gps/geoassist'], function(helper) { helper.locate(true); }); return false;" class="btn" style="width: 100%;">
+                        <i class="fa fa-map-marker" style="font-size: 35px;"></i><br />
+                        {{#str}} update_location_once, block_gps{{/str}}
+                    </a>
+                </div>
+                <div>
+                    <a href="#" id="block_gps_interval_toggler" onclick="require(['block_gps/geoassist'], function(G) { G.intervalToggle(); }); return false;" class="btn" style="width: 100%;">
+                        {{^setinterval}}
+                            <i class="fa fa-toggle-off" style="font-size: 35px;"></i><br />
+                        {{/setinterval}}
+                        {{#setinterval}}
+                            <i class="fa fa-toggle-on" style="font-size: 35px;"></i><br />
+                        {{/setinterval}}
+                        {{#str}} update_location_regularly, block_gps {{/str}}
+                    </a>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <a href="#" onclick="require(['block_gps/geoassist'], function(helper) { helper.locate(true); }); return false;" class="btn" style="width: 100%;">
-                <i class="fa fa-map-marker" style="font-size: 35px;"></i><br />
-                {{#str}} update_location_once, block_gps{{/str}}
-            </a>
-        </div>
-        <div class="col-md-6">
-            <a href="#" id="block_gps_interval_toggler" onclick="require(['block_gps/geoassist'], function(G) { G.intervalToggle(); }); return false;" class="btn" style="width: 100%;">
-                {{^setinterval}}
-                    <i class="fa fa-toggle-off" style="font-size: 35px;"></i><br />
-                {{/setinterval}}
-                {{#setinterval}}
-                    <i class="fa fa-toggle-on" style="font-size: 35px;"></i><br />
-                {{/setinterval}}
-                {{#str}} update_location_regularly, block_gps {{/str}}
-            </a>
-        </div>
-    </div>
-{{/is_https}}
+    {{/is_https}}
 
-<div class="row">
-    <div class="col-md-12">
-        <strong>{{#str}} hints, block_gps{{/str}}</strong>
+    <div>
+        <div class="row">
+            <div class="title">
+                <strong>{{#str}} hints, block_gps{{/str}}</strong>
+            </div>
+        </div>
+         <div class="row">
+            <div>
+                <a href="{{wwwroot}}/blocks/gps/list.php?id={{courseid}}" class="btn" style="width: 100%;">
+                    <i class="fa fa-list" style="font-size: 35px;"></i><br />
+                    {{#str}} list, block_gps {{/str}}
+                </a>
+            </div>
+            <div>
+                <a href="{{wwwroot}}/blocks/gps/map.php?id={{courseid}}" class="btn" style="width: 100%;">
+                    <i class="fa fa-map" style="font-size: 35px;"></i><br />
+                    {{#str}} map, block_gps {{/str}}
+                </a>
+            </div>
+        </div>
     </div>
-</div>
- <div class="row">
-    <div class="col-md-6">
-        <a href="{{wwwroot}}/blocks/gps/list.php?id={{courseid}}" class="btn" style="width: 100%;">
-            <i class="fa fa-list" style="font-size: 35px;"></i><br />
-            {{#str}} list, block_gps {{/str}}
-        </a>
-    </div>
-    <div class="col-md-6">
-        <a href="{{wwwroot}}/blocks/gps/map.php?id={{courseid}}" class="btn" style="width: 100%;">
-            <i class="fa fa-map" style="font-size: 35px;"></i><br />
-            {{#str}} map, block_gps {{/str}}
-        </a>
-    </div>
-</div>
 
-<div class="row">
-    <div class="col-md-12">
-        <strong>{{#str}} geolocation, block_gps{{/str}}</strong>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-6 mdl-align">
-        {{#str}} latitude, block_gps {{/str}}
-    </div>
-    <div class="col-md-6 mdl-align">
-        {{latitude}}
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-6 mdl-align">
-        {{#str}} longitude, block_gps {{/str}}
-    </div>
-    <div class="col-md-6 mdl-align">
-        {{longitude}}
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-6 mdl-align">
-        {{#str}} altitude, block_gps {{/str}}
-    </div>
-    <div class="col-md-6 mdl-align">
-        {{altitude}}
+    <div>
+        <div class="row">
+            <div class="title">
+                <strong>{{#str}} current, block_gps{{/str}}</strong>
+            </div>
+        </div>
+        <div class="row">
+            <div>
+                {{#str}} latitude, block_gps {{/str}}
+            </div>
+            <div>
+                {{latitude}}
+            </div>
+        </div>
+        <div class="row">
+            <div>
+                {{#str}} longitude, block_gps {{/str}}
+            </div>
+            <div>
+                {{longitude}}
+            </div>
+        </div>
+        <div class="row">
+            <div>
+                {{#str}} altitude, block_gps {{/str}}
+            </div>
+            <div>
+                {{altitude}}
+            </div>
+        </div>
     </div>
 </div>

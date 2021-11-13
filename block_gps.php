@@ -34,6 +34,8 @@ class block_gps extends block_base {
     public function get_content() {
         global $CFG, $COURSE, $OUTPUT, $PAGE;
 
+        $PAGE->requires->css('/blocks/gps/style/main.css');
+
         if ($this->content !== null) {
           return $this->content;
         }

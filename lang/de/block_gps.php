@@ -31,12 +31,16 @@ $string['title'] = 'Geolocation';
 
 $string['accuracy'] = 'Genauigkeit';
 $string['altitude'] = 'Höhe';
+$string['congratulations'] = 'Hervorragend!';
+$string['congratulations:reached_location'] = 'Du hast <span class="name">einen neuen Ort</span> erreicht! Möchtest du gleich deine Entdeckung öffnen?';
+$string['current'] = 'Aktuell';
 $string['current_location'] = 'Aktuelle Position';
 $string['distance'] = 'Distanz';
 $string['distance_error'] = 'Distanz unbekannt';
 $string['distance_your'] = 'Ihre Entfernung beträgt';
 $string['geolocation'] = 'Geolocation';
 $string['geolocation_not_supported'] = 'Geolokalisierung wird nicht unterstützt!';
+$string['goto_location'] = 'Öffne die freigeschaltene Ressource';
 $string['hints'] = 'Hinweise';
 $string['http_no_geolocation'] = 'Diese Seite wird unter http betrieben. Geodienste sind nur unter https verfügbar!';
 $string['invalid_coordinates'] = 'Ungültige Koordinaten';
@@ -64,7 +68,7 @@ $string['warning_edit_required'] = 'WARNUNG! Die Daten sind nicht korrekt. Bitte
 $string['within'] = 'innerhalb von';
 $string['unrevealed_s'] = 'Ein Objekt ist versteckt!';
 $string['unrevealed_m'] = '{$a->amount} Objekte sind versteckt!';
-$string['update_location'] = 'Position bestimmen';
-$string['update_location_once'] = 'Einmalig';
-$string['update_location_regularly'] = 'Ständig';
+$string['update_location'] = 'Standort';
+$string['update_location_once'] = 'Aktualisieren';
+$string['update_location_regularly'] = 'Automatik';
 $string['you'] = 'Du selbst';

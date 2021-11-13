@@ -1,0 +1,26 @@
+// out: ../style/main.css, sourcemap: false, compress: true
+
+.block_gps_body {
+    text-align: center;
+
+    &>div {
+        display: inline-block;
+        width: 300px;
+        .row {
+            margin: 0;
+            div {
+                text-align: center;
+                width: 50%;
+            }
+            div.title {
+                width: 100%;
+            }
+        }
+        a {
+            hyphens: auto;
+        }
+    }
+    &>div:last-child {
+        margin-bottom: 10px;
+    }
+}
