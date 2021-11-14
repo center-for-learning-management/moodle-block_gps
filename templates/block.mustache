@@ -80,7 +80,7 @@
             <div>
                 {{#str}} latitude, block_gps {{/str}}
             </div>
-            <div>
+            <div class="block_gps_current_latitude">
                 {{latitude}}
             </div>
         </div>
@@ -88,7 +88,7 @@
             <div>
                 {{#str}} longitude, block_gps {{/str}}
             </div>
-            <div>
+            <div class="block_gps_current_longitude">
                 {{longitude}}
             </div>
         </div>
@@ -97,7 +97,8 @@
                 {{#str}} altitude, block_gps {{/str}}
             </div>
             <div>
-                {{altitude}}
+                <span class="block_gps_current_altitude">{{altitude}}</span>
+                {{#str}} meters, block_gps {{/str}}
             </div>
         </div>
     </div>

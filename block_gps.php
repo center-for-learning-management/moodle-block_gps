@@ -44,7 +44,7 @@ class block_gps extends block_base {
         $this->content->text = $OUTPUT->render_from_template(
             'block_gps/block',
             (object)array(
-                'altitude' => round(\block_gps\locallib::get_location('altitude'), 0) . ' ' . get_string('meters', 'block_gps'),
+                'altitude' => round(\block_gps\locallib::get_location('altitude'), 0),
                 'courseid' => $COURSE->id,
                 'is_https' => \block_gps\locallib::is_https(),
                 'latitude' => \block_gps\locallib::get_location('latitude'),

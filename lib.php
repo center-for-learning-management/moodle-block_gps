@@ -42,6 +42,7 @@ function block_gps_before_standard_html_head() {
                         $condition->name = $modinfo->name;
                         $condition->url = $modinfo->url->__toString();
                         $condition->visible = $modinfo->visible;
+                        $condition->visibleold = $modinfo->visibleold;
                         $condition->visibleoncoursepage = $modinfo->visibleoncoursepage;
                         $PAGE->requires->js_call_amd('block_gps/geoassist', 'pushHoneypot', [ 'location' => $condition ]);
                     }

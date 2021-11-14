@@ -1,6 +1,6 @@
 define(['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/url', 'core/modal_factory', 'block_gps/modal_reachedlocation', 'block_gps/leaflet'], function($, AJAX, NOTIFICATION, STR, URL, ModalFactory, ModalReachedLocation) {
     return {
-        debug: false,
+        debug: true,
         honeypots: [],
         honeypotmodal: undefined,
         honeypotshown: [],
@@ -85,6 +85,17 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/url', 'cor
                 navigator.geolocation.getCurrentPosition(
                     function(position){
                         position = position.coords;
+
+                        if (typeof(position.latitude) !== 'undefined' && position.latitude != null) {
+                            $('.block_gps_current_latitude').html(position.latitude);
+                        }
+                        if (typeof(position.longitude) !== 'undefined' && position.longitude != null) {
+                            $('.block_gps_current_longitude').html(position.longitude);
+                        }
+                        if (typeof(position.altitude) !== 'undefined' && position.altitude != null) {
+                            $('.block_gps_current_altitude').html(position.altitude);
+                        }
+
                         if (GEOASSIST.debug) console.log('retrieved position', position);
                         $('.availability_gps_condition_button').each(function() {
                             var span = this;
@@ -112,27 +123,13 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/url', 'cor
                             ).fail(NOTIFICATION.exception);
                         });
 
+                        var found_honeypot = false;
                         GEOASSIST.honeypots.forEach(function(honeypot) {
                             var distance = GEOASSIST.distance(position, honeypot);
                             if (GEOASSIST.debug) console.log('Our distance to honeypot ', honeypot, ' is ', distance);
-                            if (distance < honeypot.accuracy) {
+                            if (honeypot.accessible && distance < honeypot.accuracy) {
                                 if (GEOASSIST.debug) console.log('JEHAAA, you reached it!');
-                                if (honeypot.persistent > 0) {
-                                    if (GEOASSIST.debug) console.log('This achievement is stored persistently, let us tell Moodle about it!');
-                                    var posdata = { lat: position.latitude, lon: position.longitude, alt: position.altitude };
-                                    AJAX.call([{
-                                        methodname: 'block_gps_locate',
-                                        args: posdata,
-                                        done: function(result){
-                                            if (GEOASSIST.debug) console.log('moodle informed about position', posdata, ' replied with', result);
-                                            if (result == 'coordinates_set') {
-                                                if (GEOASSIST.debug) console.log('Reloading page');
-                                                //location.reload();
-                                            }
-                                        },
-                                        fail: NOTIFICATION.exception,
-                                    }]);
-                                }
+                                found_honeypot = true;
                                 var alreadyshown = false;
                                 GEOASSIST.honeypotshown.forEach(function(url) {
                                     if (url == honeypot.url) {
@@ -162,6 +159,23 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/url', 'cor
 
                             }
                         });
+
+                        if (once || found_honeypot) {
+                            if (GEOASSIST.debug) console.log('Let us tell Moodle about our new position!');
+                            var posdata = { lat: position.latitude, lon: position.longitude, alt: position.altitude };
+                            AJAX.call([{
+                                methodname: 'block_gps_locate',
+                                args: posdata,
+                                done: function(result){
+                                    if (GEOASSIST.debug) console.log('moodle informed about position', posdata, ' replied with', result);
+                                    if (result == 'coordinates_set') {
+                                        if (GEOASSIST.debug) console.log('Reloading page');
+                                        //location.reload();
+                                    }
+                                },
+                                fail: NOTIFICATION.exception,
+                            }]);
+                        }
 
                         var distance = GEOASSIST.distance(GEOASSIST.lasttrackedposition, position);
                         if (GEOASSIST.debug) console.log('distance since last tracked position', distance);
@@ -194,6 +208,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/url', 'cor
          */
         pushHoneypot: function(location) {
             if (this.debug) console.log('block_gps/geoassist::pushHoneypot(location)', location);
+            location.accessible = (typeof(location.visible) !== 'undefined' && location.visible == 1);
             this.honeypots.push(location);
         },
     };
