@@ -1,6 +1,6 @@
 define(['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/url', 'core/modal_factory', 'block_gps/modal_reachedlocation', 'block_gps/leaflet'], function($, AJAX, NOTIFICATION, STR, URL, ModalFactory, ModalReachedLocation) {
     return {
-        debug: true,
+        debug: false,
         honeypots: [],
         honeypotmodal: undefined,
         honeypotshown: [],
