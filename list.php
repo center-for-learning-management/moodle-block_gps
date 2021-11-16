@@ -96,7 +96,7 @@ foreach($locations AS &$location) {
         $sec = $DB->get_record('course_sections', array('id' => $location->sectionid));
         $location->alt = get_string('section');
         $location->icon = $CFG->wwwroot . '/pix/i/folder.svg';
-        $location->name = $sec->name;
+        $location->name = (!empty($sec->name) ? $sec->name : get_string('section') . ' ' . $sec->section);
         $location->url = $CFG->wwwroot . '/course/view.php?id=' . $sec->course . '&sectionid=' . $sec->id . '#section-' . $sec->section;
         $info = new \core_availability\info_section($courseformat->get_section($sec));
     }

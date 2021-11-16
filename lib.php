@@ -25,47 +25,11 @@
 defined('MOODLE_INTERNAL') || die;
 
 function block_gps_before_standard_html_head() {
-    global $CFG, $CONTEXT, $COURSE, $DB, $OUTPUT, $PAGE, $USER;
+    global $COURSE, $PAGE;
 
     // Protect question banks on course level.
     if (!empty($PAGE->context->contextlevel) && $PAGE->context->contextlevel >= CONTEXT_COURSE) {
-        $courseinfo = \get_fast_modinfo($COURSE->id);
-        $cms = $courseinfo->get_instances();
-        foreach($cms as $type => $modlist) {
-            foreach ($modlist as $modinfo) {
-                $conditions = json_decode($modinfo->availability);
-                if (empty($conditions->c)) continue;
-                foreach ($conditions->c as $condition) {
-                    if (!empty($condition->type) && $condition->type == 'gps') {
-                        $condition->cmid = $modinfo->id;
-                        $condition->cmtype = $type;
-                        $condition->name = $modinfo->name;
-                        $condition->url = $modinfo->url->__toString();
-                        $condition->visible = $modinfo->visible;
-                        $condition->visibleold = $modinfo->visibleold;
-                        $condition->visibleoncoursepage = $modinfo->visibleoncoursepage;
-                        $PAGE->requires->js_call_amd('block_gps/geoassist', 'pushHoneypot', [ 'location' => $condition ]);
-                    }
-                }
-            }
-        }
-
-        $sections = $courseinfo->get_section_info_all();
-        foreach ($sections as $section) {
-            $conditions = json_decode($section->availability);
-            if (empty($conditions->c)) continue;
-            foreach ($conditions->c as $condition) {
-                if (!empty($condition->type) && $condition->type == 'gps') {
-                    $condition->name = (empty($section->name)) ? get_string('section') . ' ' . $section->section : $section->name;
-                    $condition->sectionid = $section->id;
-                    $condition->sectionno = $section->section;
-                    $condition->url = (new \moodle_url('/course/view.php', [ 'id' => $section->course], 'section-' . $section->section))->__toString();
-                    $condition->visible = $section->visible;
-                    $PAGE->requires->js_call_amd('block_gps/geoassist', 'pushHoneypot', [ 'location' => $condition ]);
-                }
-            }
-        }
-
+        $PAGE->requires->js_call_amd('block_gps/geoassist', 'getHoneypots', [ 'courseid' => $COURSE->id ]);
     }
 
 }

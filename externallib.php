@@ -25,6 +25,78 @@ require_once($CFG->libdir . "/externallib.php");
 
 class block_gps_ws extends external_api {
     /**
+     * Get honeypots for a user in a specific course.
+     * @return checked parameters
+    **/
+    public static function gethoneypots_parameters() {
+        return new external_function_parameters(
+                array(
+                    'courseid' => new external_value(PARAM_INT, 'Course ID'),
+                )
+        );
+    }
+    public static function gethoneypots($courseid) {
+        $params = self::validate_parameters(
+            self::gethoneypots_parameters(),
+            array(
+                'courseid' => $courseid
+            )
+        );
+        require_login($params['courseid']);
+        $ctx = \context_course::instance($params['courseid']);
+        if (!is_enrolled($ctx)) {
+            throw new \moodle_exception('access to this course not allowed');
+        }
+
+        $honeypots = [];
+        $courseinfo = \get_fast_modinfo($params['courseid']);
+        $cms = $courseinfo->get_instances();
+        foreach($cms as $type => $modlist) {
+            foreach ($modlist as $modinfo) {
+                $conditions = json_decode($modinfo->availability);
+                if (empty($conditions->c)) continue;
+                foreach ($conditions->c as $condition) {
+                    if (!empty($condition->type) && $condition->type == 'gps') {
+                        $condition->available = $modinfo->available;
+                        $condition->availableinfo = $modinfo->availableinfo;
+                        $condition->cmid = $modinfo->id;
+                        $condition->cmtype = $type;
+                        $condition->name = $modinfo->name;
+                        $condition->url = $modinfo->url->__toString();
+                        $condition->uservisible = $modinfo->uservisible;
+                        $condition->visible = $modinfo->visible;
+                        $condition->visibleold = $modinfo->visibleold;
+                        $condition->visibleoncoursepage = $modinfo->visibleoncoursepage;
+                        $honeypots[] = $condition;
+                    }
+                }
+            }
+        }
+
+        $sections = $courseinfo->get_section_info_all();
+        foreach ($sections as $section) {
+            $conditions = json_decode($section->availability);
+            if (empty($conditions->c)) continue;
+            foreach ($conditions->c as $condition) {
+                if (!empty($condition->type) && $condition->type == 'gps') {
+                    $condition->available = $section->available;
+                    $condition->availableinfo = $section->availableinfo;
+                    $condition->name = (empty($section->name)) ? get_string('section') . ' ' . $section->section : $section->name;
+                    $condition->sectionid = $section->id;
+                    $condition->sectionno = $section->section;
+                    $condition->url = (new \moodle_url('/course/view.php', [ 'id' => $section->course], 'section-' . $section->section))->__toString();
+                    $condition->visible = $section->visible;
+                    $honeypots[] = $condition;
+                }
+            }
+        }
+
+        return json_encode($honeypots, JSON_NUMERIC_CHECK);
+    }
+    public static function gethoneypots_returns() {
+        return new external_value(PARAM_RAW, 'All honeypots as JSON-String');
+    }
+    /**
      * Store current location to session
      * @return checked parameters
     **/

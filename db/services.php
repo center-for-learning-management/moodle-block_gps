@@ -24,6 +24,15 @@
 defined('MOODLE_INTERNAL') || die;
 
 $functions = array(
+    'block_gps_gethoneypots' => array(
+        'classname'   => 'block_gps_ws',
+        'methodname'  => 'gethoneypots',
+        'classpath'   => 'blocks/gps/externallib.php',
+        'description' => 'Get all honeypots within a course',
+        'type'        => 'read',
+        'ajax'        => 1,
+        'services'      => [MOODLE_OFFICIAL_MOBILE_SERVICE, 'local_mobile'],
+    ),
     'block_gps_locate' => array(
         'classname'   => 'block_gps_ws',
         'methodname'  => 'locate',

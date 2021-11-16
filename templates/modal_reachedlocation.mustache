@@ -36,12 +36,20 @@
     {{$body}}
         <p>
             <i class="fa fa-thumbs-up" style="font-size: 60px; float: right; margin-left: 15px;"></i>
-            {{#str}} congratulations:reached_location, block_gps {{/str}}
+            <div class="found-single hidden">
+                {{#str}} congratulations:reached_location:single, block_gps {{/str}}
+            </div>
+            <div class="found-multiple hidden">
+                {{#str}} congratulations:reached_location:multiple, block_gps {{/str}}
+            </div>
         </p>
+        <ul class="found-list">
+        </ul>
     {{/body}}
     {{$footer}}
-        <a href="#" class="btn btn-primary" data-action="goto">
-            {{#str}} goto_location, block_gps {{/str}}
+        <a href="#" class="btn btn-primary block_gps_reload">
+            <i class="fa fa-refresh"></i>
+            {{#str}} reload_page, block_gps {{/str}}
         </a>
     {{/footer}}
 {{/ core/modal }}
