@@ -44,6 +44,7 @@ $string['geolocation_not_supported'] = 'Geolokalisierung wird nicht unterstützt
 $string['goto_location'] = 'Öffne die freigeschaltene Ressource';
 $string['hints'] = 'Hinweise';
 $string['http_no_geolocation'] = 'Diese Seite wird unter http betrieben. Geodienste sind nur unter https verfügbar!';
+$string['injectbanner:description'] = 'Dieser Kurs verwendet GPS-basierte Voraussetzungen. Um diese Ressourcen anzuzeigen, müssen Sie möglicherweise Ihre aktuelle Position ermitteln.';
 $string['invalid_coordinates'] = 'Ungültige Koordinaten';
 $string['item'] = 'Objekt';
 $string['latitude'] = 'Breitengrad';

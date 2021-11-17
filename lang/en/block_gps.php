@@ -47,6 +47,7 @@ $string['geolocation_not_supported'] = 'Geolocation not supported';
 $string['goto_location'] = 'Go to the achieved location';
 $string['hints'] = 'Hints';
 $string['http_no_geolocation'] = 'You are running this site under http. Geolocation is only supported on https-Sites!';
+$string['injectbanner:description'] = 'This course uses location based conditions. To view these resources, you may need to determine your current location.';
 $string['invalid_coordinates'] = 'Invalid coordinates';
 $string['item'] = 'Item';
 $string['latitude'] = 'Latitude';

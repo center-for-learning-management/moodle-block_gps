@@ -58,6 +58,23 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/url', 'cor
             }]);
         },
         /**
+         * Inject a banner on top of a course page to inform the user
+         * that localization may be needed.
+         */
+        injectBanner: function() {
+            if (this.debug) console.log('block_gps/geoassist::injectBanner()');
+            if ($('body').hasClass('path-course')) {
+                AJAX.call([{
+                    methodname: 'block_gps_getbanner',
+                    args: { },
+                    done: function(result){
+                        $('#user-notifications').prepend(result);
+                    },
+                    fail: NOTIFICATION.exception,
+                }]);
+            }
+        },
+        /**
          * Start an interval for requesting the location.
          * @param ms milliseconds between requests
          */

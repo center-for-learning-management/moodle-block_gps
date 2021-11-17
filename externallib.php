@@ -25,6 +25,28 @@ require_once($CFG->libdir . "/externallib.php");
 
 class block_gps_ws extends external_api {
     /**
+     * Get the banner to be shown on top of the course page.
+    **/
+    public static function getbanner_parameters() {
+        return new external_function_parameters(array());
+    }
+    public static function getbanner() {
+        global $COURSE, $OUTPUT, $PAGE;
+        $PAGE->set_context(\context_system::instance());
+        return $OUTPUT->render_from_template('block_gps/injectbanner', (object)array(
+            'altitude' => round(\block_gps\locallib::get_location('altitude'), 0),
+            'courseid' => $COURSE->id,
+            'is_https' => \block_gps\locallib::is_https(),
+            'latitude' => \block_gps\locallib::get_location('latitude'),
+            'longitude' => \block_gps\locallib::get_location('longitude'),
+            'setinterval' => \block_gps\locallib::cache_get('session', 'setinterval'),
+            'wwwroot' => $CFG->wwwroot,
+        ));
+    }
+    public static function getbanner_returns() {
+        return new external_value(PARAM_RAW, 'The whole banner as HTML Element');
+    }
+    /**
      * Get honeypots for a user in a specific course.
      * @return checked parameters
     **/

@@ -24,6 +24,15 @@
 defined('MOODLE_INTERNAL') || die;
 
 $functions = array(
+    'block_gps_getbanner' => array(
+        'classname'   => 'block_gps_ws',
+        'methodname'  => 'getbanner',
+        'classpath'   => 'blocks/gps/externallib.php',
+        'description' => 'Get the banner to be shown on top of course page',
+        'type'        => 'read',
+        'ajax'        => 1,
+        'services'      => [MOODLE_OFFICIAL_MOBILE_SERVICE, 'local_mobile'],
+    ),
     'block_gps_gethoneypots' => array(
         'classname'   => 'block_gps_ws',
         'methodname'  => 'gethoneypots',
