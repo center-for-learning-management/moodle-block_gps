@@ -64,11 +64,7 @@ class block_gps_ws extends external_api {
                 'courseid' => $courseid
             )
         );
-        require_login($params['courseid']);
-        $ctx = \context_course::instance($params['courseid']);
-        if (!is_enrolled($ctx)) {
-            throw new \moodle_exception('access to this course not allowed');
-        }
+        require_login($params['courseid'], true, null, true, true);
 
         $honeypots = [];
         $courseinfo = \get_fast_modinfo($params['courseid']);
