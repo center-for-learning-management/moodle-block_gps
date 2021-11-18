@@ -28,14 +28,24 @@ class block_gps_ws extends external_api {
      * Get the banner to be shown on top of the course page.
     **/
     public static function getbanner_parameters() {
-        return new external_function_parameters(array());
+        return new external_function_parameters(
+            array(
+                'courseid' => new external_value(PARAM_INT, 'Course ID'),
+            )
+        );
     }
-    public static function getbanner() {
+    public static function getbanner($courseid) {
         global $CFG, $COURSE, $OUTPUT, $PAGE;
-        $PAGE->set_context(\context_system::instance());
+        $params = self::validate_parameters(
+            self::getbanner_parameters(),
+            array(
+                'courseid' => $courseid
+            )
+        );
+        $PAGE->set_context(\context_course::instance($params['courseid']));
         return $OUTPUT->render_from_template('block_gps/injectbanner', (object)array(
             'altitude' => round(\block_gps\locallib::get_location('altitude'), 0),
-            'courseid' => $COURSE->id,
+            'courseid' => $params['courseid'],
             'is_https' => \block_gps\locallib::is_https(),
             'latitude' => \block_gps\locallib::get_location('latitude'),
             'longitude' => \block_gps\locallib::get_location('longitude'),
