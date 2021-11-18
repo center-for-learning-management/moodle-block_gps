@@ -31,7 +31,7 @@ class block_gps_ws extends external_api {
         return new external_function_parameters(array());
     }
     public static function getbanner() {
-        global $COURSE, $OUTPUT, $PAGE;
+        global $CFG, $COURSE, $OUTPUT, $PAGE;
         $PAGE->set_context(\context_system::instance());
         return $OUTPUT->render_from_template('block_gps/injectbanner', (object)array(
             'altitude' => round(\block_gps\locallib::get_location('altitude'), 0),
