@@ -74,7 +74,7 @@ class block_gps_ws extends external_api {
                 'courseid' => $courseid
             )
         );
-        require_login($params['courseid'], true, null, true, true);
+        require_course_login($params['courseid'], true, null, true, true);
 
         $honeypots = [];
         $courseinfo = \get_fast_modinfo($params['courseid']);
