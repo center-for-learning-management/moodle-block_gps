@@ -27,8 +27,9 @@ defined('MOODLE_INTERNAL') || die;
 function block_gps_before_standard_html_head() {
     global $COURSE, $PAGE;
 
-    // Protect question banks on course level.
-    if (!empty($PAGE->context->contextlevel) && $PAGE->context->contextlevel >= CONTEXT_COURSE) {
+    if (!empty($PAGE->context->contextlevel)
+            && $PAGE->context->contextlevel >= CONTEXT_COURSE
+            && \block_gps\locallib::get_honeypots($COURSE->id, true)) {
         $PAGE->requires->js_call_amd('block_gps/geoassist', 'getHoneypots', [ 'courseid' => $COURSE->id ]);
     }
 

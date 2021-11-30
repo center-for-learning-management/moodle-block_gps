@@ -175,4 +175,62 @@ class locallib {
         self::cache_set("session", "longitude", $longitude);
         self::cache_set("session", "altitude", $altitude);
     }
+
+    /**
+     * Return all honeypots of a specific course or check if condition is used.
+     * @param courseid the courseid.
+     * @param onlycheck only return true after first found condition.
+     */
+    public static function get_honeypots($courseid, $onlycheck = false) {
+        require_login();
+        if ($courseid > 1) {
+            require_course_login($courseid, true, null, true, true);
+        }
+
+        $honeypots = [];
+        $courseinfo = \get_fast_modinfo($courseid);
+        $cms = $courseinfo->get_instances();
+        foreach($cms as $type => $modlist) {
+            foreach ($modlist as $modinfo) {
+                $conditions = json_decode($modinfo->availability);
+                if (empty($conditions->c)) continue;
+                foreach ($conditions->c as $condition) {
+                    if (!empty($condition->type) && $condition->type == 'gps') {
+                        if ($onlycheck) return true;
+                        $condition->available = $modinfo->available;
+                        $condition->availableinfo = $modinfo->availableinfo;
+                        $condition->cmid = $modinfo->id;
+                        $condition->cmtype = $type;
+                        $condition->name = $modinfo->name;
+                        $condition->url = $modinfo->url->__toString();
+                        $condition->uservisible = $modinfo->uservisible;
+                        $condition->visible = $modinfo->visible;
+                        $condition->visibleold = $modinfo->visibleold;
+                        $condition->visibleoncoursepage = $modinfo->visibleoncoursepage;
+                        $honeypots[] = $condition;
+                    }
+                }
+            }
+        }
+
+        $sections = $courseinfo->get_section_info_all();
+        foreach ($sections as $section) {
+            $conditions = json_decode($section->availability);
+            if (empty($conditions->c)) continue;
+            foreach ($conditions->c as $condition) {
+                if (!empty($condition->type) && $condition->type == 'gps') {
+                    if ($onlycheck) return true;
+                    $condition->available = $section->available;
+                    $condition->availableinfo = $section->availableinfo;
+                    $condition->name = (empty($section->name)) ? get_string('section') . ' ' . $section->section : $section->name;
+                    $condition->sectionid = $section->id;
+                    $condition->sectionno = $section->section;
+                    $condition->url = (new \moodle_url('/course/view.php', [ 'id' => $section->course], 'section-' . $section->section))->__toString();
+                    $condition->visible = $section->visible;
+                    $honeypots[] = $condition;
+                }
+            }
+        }
+        return $honeypots;
+    }
 }
