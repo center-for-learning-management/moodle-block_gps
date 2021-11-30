@@ -63,7 +63,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/url', 'cor
          */
         injectBanner: function(courseid) {
             if (this.debug) console.log('block_gps/geoassist::injectBanner(courseid)', courseid);
-            if ($('body').hasClass('path-course')) {
+            if ($('body').hasClass('path-course') || $('body').hasClass('path-site')) {
                 AJAX.call([{
                     methodname: 'block_gps_getbanner',
                     args: { courseid: courseid },

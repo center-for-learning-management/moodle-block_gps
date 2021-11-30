@@ -183,18 +183,6 @@ class locallib {
      */
     public static function get_honeypots($courseid, $onlycheck = false) {
         require_login();
-        if ($courseid > 1) {
-            require_course_login($courseid, true, null, true, true);
-        }
-
-        /* If the context was not set properly, errors may occur in regard of
-         * the use of mustache templates by availability_gps. Therefore we
-         * set the context in such cases to the course context.
-         */
-        global $PAGE;
-        if (empty($PAGE->context)) {
-            $PAGE->set_context(\context_course::instance($courseid));
-        }
 
         $honeypots = [];
         $courseinfo = \get_fast_modinfo($courseid);

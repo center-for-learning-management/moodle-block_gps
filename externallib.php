@@ -68,6 +68,7 @@ class block_gps_ws extends external_api {
         );
     }
     public static function gethoneypots($courseid) {
+        global $PAGE;
         $params = self::validate_parameters(
             self::gethoneypots_parameters(),
             array(
@@ -75,6 +76,7 @@ class block_gps_ws extends external_api {
             )
         );
 
+        $PAGE->set_context(\context_course::instance($params['courseid']));
         $honeypots = \block_gps\locallib::get_honeypots($params['courseid']);
 
         return json_encode($honeypots, JSON_NUMERIC_CHECK);
