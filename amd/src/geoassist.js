@@ -1,5 +1,7 @@
 define(['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/url', 'core/modal_factory', 'block_gps/modal_reachedlocation', 'block_gps/leaflet'], function($, AJAX, NOTIFICATION, STR, URL, ModalFactory, ModalReachedLocation) {
     return {
+        available_cmids: [],
+        available_secids: [],
         courseid: 0,
         debug: true,
         posaccuracy: 5, // round coords to this amount of digits after comma
@@ -46,9 +48,21 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/url', 'cor
                     if (GEOASSIST.debug) console.log('Got honeypots', GEOASSIST.honeypots);
                     GEOASSIST.honeypots.forEach(function(honeypot) {
                         if (honeypot.uservisible) {
-                            GEOASSIST.foundcms[honeypot.cmid] = true;
-                            if (!initializing) {
-                                foundnewhoneypots.push(honeypot);
+                            if (typeof honeypot.cmid !== 'undefined') {
+                                if (!initializing && GEOASSIST.available_cmids.indexOf(honeypot.cmid) == -1) {
+                                    foundnewhoneypots.push(honeypot);
+                                }
+                                if (GEOASSIST.available_cmids.indexOf(honeypot.cmid) == -1) {
+                                    GEOASSIST.available_cmids.push(honeypot.cmid);
+                                }
+                            }
+                            if (typeof honeypot.sectionid !== 'undefined') {
+                                if (!initializing && GEOASSIST.available_secids.indexOf(honeypot.sectionid) == -1) {
+                                    foundnewhoneypots.push(honeypot);
+                                }
+                                if (GEOASSIST.available_secids.indexOf(honeypot.sectionid) == -1) {
+                                    GEOASSIST.available_secids.push(honeypot.sectionid);
+                                }
                             }
                         }
                     });
@@ -82,14 +96,14 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/url', 'cor
             var GEOASSIST = this;
             if (this.debug) console.log('block_gps/geoassist::interval(ms)', ms);
             if (ms > 0) {
-                $('#block_gps_interval_toggler').find('i.fa').removeClass('fa-toggle-off').addClass('fa-toggle-on');
+                $('.block_gps_interval_toggler').find('i.fa').removeClass('fa-toggle-off').addClass('fa-toggle-on');
                 clearInterval(this.locateinterval);
                 this.locateinterval = setInterval(function() { GEOASSIST.locate(); }, ms);
                 this.locateintervalrunning = true;
                 // We ask for permission immediately.
                 navigator.geolocation.getCurrentPosition(function() {});
             } else if (typeof(this.locateinterval) !== 'undefined') {
-                $('#block_gps_interval_toggler').find('i.fa').removeClass('fa-toggle-on').addClass('fa-toggle-off');
+                $('.block_gps_interval_toggler').find('i.fa').removeClass('fa-toggle-on').addClass('fa-toggle-off');
                 clearInterval(this.locateinterval);
                 this.locateinterval = null;
                 this.locateintervalrunning = false;
@@ -230,8 +244,13 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/url', 'cor
                                 }
                             ).fail(NOTIFICATION.exception);
                         }
-
                         GEOASSIST.lasttrackedposition = position;
+                    },
+                    function(error) {
+                        NOTIFICATION.alert(
+                            'Error ' + error.code,
+                            error.message
+                        );
                     }
                 );
             } else {

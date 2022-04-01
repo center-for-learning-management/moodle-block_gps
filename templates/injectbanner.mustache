@@ -16,68 +16,70 @@
   }}
 
 
-    {{^is_https}}
-        <div class="alert alert-danger">{{#str}} http_no_geolocation, block_gps {{/str}}</div>
-    {{/is_https}}
-    {{#is_https}}
-        <div class="alert alert-block">
-            <div class="row" style="margin-bottom: 5px;">
-                <div class="col-md-12 mdl-align">
-                    {{#str}} injectbanner:description, block_gps{{/str}}
-                </div>
-            </div>
-            <div class="row" style="display: flex; justify-content: center;">
-                <div class="mdl-align" style="width: 300px;">
-                    <strong>{{#str}} update_location, block_gps{{/str}}</strong><br />
-                    <a href="#" onclick="require(['block_gps/geoassist'], function(helper) { helper.locate(true); }); return false;" class="btn">
-                        <i class="fa fa-map-marker" style="font-size: 35px;"></i><br />
-                        {{#str}} update_location_once, block_gps{{/str}}
-                    </a>
-
-                    <a href="#" id="block_gps_interval_toggler" onclick="require(['block_gps/geoassist'], function(G) { G.intervalToggle(); }); return false;" class="btn">
-                        {{^setinterval}}
-                            <i class="fa fa-toggle-off" style="font-size: 35px;"></i><br />
-                        {{/setinterval}}
-                        {{#setinterval}}
-                            <i class="fa fa-toggle-on" style="font-size: 35px;"></i><br />
-                        {{/setinterval}}
-                        {{#str}} update_location_regularly, block_gps {{/str}}
-                    </a>
-                </div>
-                <div class="mdl-align" style="width: 300px;">
-                    <strong>{{#str}} hints, block_gps{{/str}}</strong><br />
-                    <a href="{{wwwroot}}/blocks/gps/list.php?id={{courseid}}" class="btn">
-                        <i class="fa fa-list" style="font-size: 35px;"></i><br />
-                        {{#str}} list, block_gps {{/str}}
-                    </a>
-
-                    <a href="{{wwwroot}}/blocks/gps/map.php?id={{courseid}}" class="btn">
-                        <i class="fa fa-map" style="font-size: 35px;"></i><br />
-                        {{#str}} map, block_gps {{/str}}
-                    </a>
-                </div>
-                <div class="mdl-align" style="width: 300px;">
-                    <strong>{{#str}} current, block_gps{{/str}}</strong><br />
-                    <center>
-                        <table border="0">
-                            <tr>
-                                <td>{{#str}} latitude, block_gps {{/str}}</td>
-                                <td class="block_gps_current_latitude mdl-align">{{latitude}}</td>
-                            </tr>
-                            <tr>
-                                <td>{{#str}} longitude, block_gps {{/str}}</td>
-                                <td class="block_gps_current_longitude mdl-align">{{longitude}}</td>
-                            </tr>
-                            <tr>
-                                <td>{{#str}} altitude, block_gps {{/str}}</td>
-                                <td class="mdl-align">
-                                    <span class="block_gps_current_altitude">{{altitude}}</span>
-                                    {{#str}} meters, block_gps {{/str}}
-                                </td>
-                            </tr>
-                        </table>
-                    </center>
-                </div>
+{{^is_https}}
+    <div class="alert alert-danger">{{#str}} http_no_geolocation, block_gps {{/str}}</div>
+{{/is_https}}
+{{#is_https}}
+    <div class="alert alert-block">
+        <div class="row" style="margin-bottom: 5px;">
+            <div class="col-md-12 mdl-align">
+                {{#str}} injectbanner:description, block_gps{{/str}}
             </div>
         </div>
-    {{/is_https}}
+        <div class="row" style="display: flex; justify-content: center;">
+            <div class="mdl-align" style="width: 300px;">
+                <strong>{{#str}} update_location, block_gps{{/str}}</strong><br />
+                <a onclick="require(['block_gps/geoassist'], function(helper) { helper.locate(true); }); return false;"
+                    href="#" class="btn">
+                    <i class="fa fa-map-marker" style="font-size: 35px;"></i><br />
+                    {{#str}} update_location_once, block_gps{{/str}}
+                </a>
+
+                <a onclick="require(['block_gps/geoassist'], function(G) { G.intervalToggle(); }); return false;"
+                    href="#" class="btn block_gps_interval_toggler">
+                    {{^setinterval}}
+                        <i class="fa fa-toggle-off" style="font-size: 35px;"></i><br />
+                    {{/setinterval}}
+                    {{#setinterval}}
+                        <i class="fa fa-toggle-on" style="font-size: 35px;"></i><br />
+                    {{/setinterval}}
+                    {{#str}} update_location_regularly, block_gps {{/str}}
+                </a>
+            </div>
+            <div class="mdl-align" style="width: 300px;">
+                <strong>{{#str}} hints, block_gps{{/str}}</strong><br />
+                <a href="{{wwwroot}}/blocks/gps/list.php?id={{courseid}}" class="btn">
+                    <i class="fa fa-list" style="font-size: 35px;"></i><br />
+                    {{#str}} list, block_gps {{/str}}
+                </a>
+
+                <a href="{{wwwroot}}/blocks/gps/map.php?id={{courseid}}" class="btn">
+                    <i class="fa fa-map" style="font-size: 35px;"></i><br />
+                    {{#str}} map, block_gps {{/str}}
+                </a>
+            </div>
+            <div class="mdl-align" style="width: 300px;">
+                <strong>{{#str}} current, block_gps{{/str}}</strong><br />
+                <center>
+                    <table border="0">
+                        <tr>
+                            <td>{{#str}} latitude, block_gps {{/str}}</td>
+                            <td class="block_gps_current_latitude mdl-align">{{latitude}}</td>
+                        </tr>
+                        <tr>
+                            <td>{{#str}} longitude, block_gps {{/str}}</td>
+                            <td class="block_gps_current_longitude mdl-align">{{longitude}}</td>
+                        </tr>
+                        <tr>
+                            <td>{{#str}} altitude, block_gps {{/str}}</td>
+                            <td class="mdl-align">
+                                <span class="block_gps_current_altitude">{{altitude}}</span>
+                                {{#str}} meters, block_gps {{/str}}
+                            </td>
+                        </tr>
+                    </table>
+                </center>
+            </div>
+        </div>
+    </div>
+{{/is_https}}

@@ -34,7 +34,8 @@
                     </a>
                 </div>
                 <div>
-                    <a href="#" id="block_gps_interval_toggler" onclick="require(['block_gps/geoassist'], function(G) { G.intervalToggle(); }); return false;" class="btn" style="width: 100%;">
+                    <a href="#" onclick="require(['block_gps/geoassist'], function(G) { G.intervalToggle(); }); return false;"
+                        class="btn block_gps_interval_toggler" style="width: 100%;">
                         {{^setinterval}}
                             <i class="fa fa-toggle-off" style="font-size: 35px;"></i><br />
                         {{/setinterval}}

@@ -223,6 +223,7 @@ class locallib {
                     $condition->sectionid = $section->id;
                     $condition->sectionno = $section->section;
                     $condition->url = (new \moodle_url('/course/view.php', [ 'id' => $section->course], 'section-' . $section->section))->__toString();
+                    $condition->uservisible = $section->uservisible;
                     $condition->visible = $section->visible;
                     $honeypots[] = $condition;
                 }
