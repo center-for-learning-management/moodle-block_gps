@@ -74,20 +74,21 @@ echo $OUTPUT->render_from_template(
 );
 
 $unrevealed = array();
-foreach($locations AS &$location) {
+foreach ($locations as &$location) {
     $conditionposition = (object)array(
         'longitude' => $location->longitude,
         'latitude' => $location->latitude,
     );
     $location->distance = \block_gps\locallib::get_distance($userposition, $conditionposition, 2);
     $chkdist = ($location->distance < $location->accuracy);
-    $location->distlbl = ($location->distance !== -1) ? number_format($location->distance, 0, ',', ' ') . ' ' . get_string('meters', 'block_gps') : get_string('n_a', 'block_gps');
+    $location->distlbl = ($location->distance !== -1) ?
+        number_format($location->distance, 0, ',', ' ') . ' ' . get_string('meters', 'block_gps') : get_string('n_a', 'block_gps');
 
     $location->alt = ''; $location->icon = ''; $location->name = ''; $location->url = '';
     if ($location->cmid > 0) {
         $cm = $modinfo->get_cm($location->cmid);
         $location->alt = $cm->modname;
-        $location->icon = (method_exists($cm, 'get_icon_url')?$cm->get_icon_url():'');
+        $location->icon = (method_exists($cm, 'get_icon_url') ? $cm->get_icon_url() : '');
         $location->name = $cm->name;
         $location->url = $cm->url;
         $info = new \core_availability\info_module($cm);
@@ -124,7 +125,7 @@ echo $OUTPUT->render_from_template(
 
 if (count($unrevealed) > 0) {
     echo $OUTPUT->render_from_template(
-        'block_gps/unrevealed-' . ((count($unrevealed) == 1)?'single':'multiple'),
+        'block_gps/unrevealed-' . ((count($unrevealed) == 1) ? 'single' : 'multiple'),
         (object) array(
             'amount' => count($unrevealed),
             'items' => $unrevealed,
