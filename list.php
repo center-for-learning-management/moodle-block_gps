@@ -33,7 +33,7 @@ $params = array();
 if (!empty($id)) {
     $params = array('id' => $id);
 } else {
-    print_error('unspecifycourseid', 'error');
+    throw new moodle_exception('unspecifycourseid', 'error');
 }
 $course = $DB->get_record('course', $params, '*', MUST_EXIST);
 $urlparams = array('id' => $course->id);
@@ -46,7 +46,7 @@ $context = context_course::instance($course->id, MUST_EXIST);
 $PAGE->set_context($context);
 require_login($course);
 
-$PAGE->set_url(new moodle_url($CFG->wwwroot . '/blocks/gps/list.php'), $urlparams); // Defined here to avoid notices on errors etc
+$PAGE->set_url(new moodle_url($CFG->wwwroot . '/blocks/gps/list.php'), $urlparams); // Defined here to avoid notices on errors etc!
 $PAGE->set_cacheable(false);
 $PAGE->set_pagelayout('course');
 $course->format = course_get_format($course)->get_format();
@@ -98,7 +98,8 @@ foreach ($locations as &$location) {
         $location->alt = get_string('section');
         $location->icon = $CFG->wwwroot . '/pix/i/folder.svg';
         $location->name = (!empty($sec->name) ? $sec->name : get_string('section') . ' ' . $sec->section);
-        $location->url = $CFG->wwwroot . '/course/view.php?id=' . $sec->course . '&sectionid=' . $sec->id . '#section-' . $sec->section;
+        $location->url = $CFG->wwwroot . '/course/view.php?id='
+            . $sec->course . '&sectionid=' . $sec->id . '#section-' . $sec->section;
         $info = new \core_availability\info_section($courseformat->get_section($sec));
     }
     $condition = new \availability_gps\condition($location);
