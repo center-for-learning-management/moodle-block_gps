@@ -1,4 +1,5 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
@@ -35,14 +36,14 @@ class block_gps_ws extends external_api {
         );
     }
     public static function getbanner($courseid) {
-        global $CFG, $COURSE, $OUTPUT;
+        global $CFG, $COURSE, $OUTPUT $PAGE;
         $params = self::validate_parameters(
             self::getbanner_parameters(),
             array(
                 'courseid' => $courseid
             )
         );
-        $this->page->set_context(\context_course::instance($params['courseid']));
+        $PAGE->set_context(\context_course::instance($params['courseid']));
         return $OUTPUT->render_from_template('block_gps/injectbanner', (object)array(
             'altitude' => round(\block_gps\locallib::get_location('altitude'), 0),
             'courseid' => $params['courseid'],
@@ -68,6 +69,7 @@ class block_gps_ws extends external_api {
         );
     }
     public static function gethoneypots($courseid) {
+        global $PAGE;
         $params = self::validate_parameters(
             self::gethoneypots_parameters(),
             array(
@@ -75,7 +77,7 @@ class block_gps_ws extends external_api {
             )
         );
 
-        $this->page->set_context(\context_course::instance($params['courseid']));
+        $PAGE->set_context(\context_course::instance($params['courseid']));
         $honeypots = \block_gps\locallib::get_honeypots($params['courseid']);
 
         return json_encode($honeypots, JSON_NUMERIC_CHECK);
@@ -132,7 +134,7 @@ class block_gps_ws extends external_api {
         if ($distance > 5 && $params['lat'] > -200 && $params['lon'] > -200) {
             \block_gps\locallib::set_location($params['lat'], $params['lon'], $params['alt']);
             return 'coordinates_set';
-        } else { 
+        } else {
             if ($distance < 5) {
                 return 'moved_less_than_5m';
             } else {
