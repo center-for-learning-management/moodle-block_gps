@@ -1,5 +1,4 @@
 <?php
-
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
@@ -21,12 +20,13 @@
  * @author     Robert Schrenk
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die;
 require_once($CFG->libdir . "/externallib.php");
 
 class block_gps_ws extends external_api {
     /**
      * Get the banner to be shown on top of the course page.
-    **/
+     **/
     public static function getbanner_parameters() {
         return new external_function_parameters(
             array(
@@ -35,14 +35,14 @@ class block_gps_ws extends external_api {
         );
     }
     public static function getbanner($courseid) {
-        global $CFG, $COURSE, $OUTPUT, $PAGE;
+        global $CFG, $COURSE, $OUTPUT;
         $params = self::validate_parameters(
             self::getbanner_parameters(),
             array(
                 'courseid' => $courseid
             )
         );
-        $PAGE->set_context(\context_course::instance($params['courseid']));
+        $this->page->set_context(\context_course::instance($params['courseid']));
         return $OUTPUT->render_from_template('block_gps/injectbanner', (object)array(
             'altitude' => round(\block_gps\locallib::get_location('altitude'), 0),
             'courseid' => $params['courseid'],
@@ -59,7 +59,7 @@ class block_gps_ws extends external_api {
     /**
      * Get honeypots for a user in a specific course.
      * @return checked parameters
-    **/
+     **/
     public static function gethoneypots_parameters() {
         return new external_function_parameters(
                 array(
@@ -68,7 +68,6 @@ class block_gps_ws extends external_api {
         );
     }
     public static function gethoneypots($courseid) {
-        global $PAGE;
         $params = self::validate_parameters(
             self::gethoneypots_parameters(),
             array(
@@ -76,7 +75,7 @@ class block_gps_ws extends external_api {
             )
         );
 
-        $PAGE->set_context(\context_course::instance($params['courseid']));
+        $this->page->set_context(\context_course::instance($params['courseid']));
         $honeypots = \block_gps\locallib::get_honeypots($params['courseid']);
 
         return json_encode($honeypots, JSON_NUMERIC_CHECK);
@@ -87,7 +86,7 @@ class block_gps_ws extends external_api {
     /**
      * Store current location to session
      * @return checked parameters
-    **/
+     **/
     public static function locate_parameters() {
         return new external_function_parameters(
                 array(
@@ -133,8 +132,10 @@ class block_gps_ws extends external_api {
         if ($distance > 5 && $params['lat'] > -200 && $params['lon'] > -200) {
             \block_gps\locallib::set_location($params['lat'], $params['lon'], $params['alt']);
             return 'coordinates_set';
-        } else if($distance < 5) {
+        } else { 
+            if ($distance < 5) {
             return 'moved_less_than_5m';
+            } 
         } else {
             return 'invalid_coordinates';
         }
@@ -146,7 +147,7 @@ class block_gps_ws extends external_api {
     /**
      * Store the desired interval.
      * @return checked parameters
-    **/
+     **/
     public static function setinterval_parameters() {
         return new external_function_parameters(
             array(
