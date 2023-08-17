@@ -128,12 +128,12 @@ class locallib {
      * Loads all conditions from sections and modules in a course and returns a list.
      * @param courseid ID of the course
      * @return array containing all positions as object
-    **/
+     **/
     public static function load_positions($courseid) {
         global $DB;
         $positions = array();
         $sections = $DB->get_records('course_sections', array('course' => $courseid));
-        foreach ($sections AS $section) {
+        foreach ($sections as $section) {
             $haspositions = self::load_position_condition($section, 'sectionid');
             if (count($haspositions) > 0) {
                 $positions = array_merge($positions, $haspositions);
@@ -165,16 +165,16 @@ class locallib {
                         $condition->cmid = 0; $condition->sectionid = 0;
                         $condition->{$idtype} = $o->id;
                         if (!isset($condition->accuracy)) {
-                            $condition->accuracy = 5; 
+                            $condition->accuracy = 5;
                         }
                         if (!isset($condition->persistent)) {
-                            $condition->persistent = 0; 
+                            $condition->persistent = 0;
                         }
                         if (!isset($condition->revealname)) {
-                            $condition->revealname = 0; 
+                            $condition->revealname = 0;
                         }
                         if (!isset($condition->reveal)) {
-                            $condition->reveal = 0; 
+                            $condition->reveal = 0;
                         }
                         $positions[] = $condition;
                     }
@@ -210,7 +210,9 @@ class locallib {
                 }
                 foreach ($conditions->c as $condition) {
                     if (!empty($condition->type) && $condition->type == 'gps') {
-                        if ($onlycheck) return true;
+                        if ($onlycheck) { 
+                            return true;
+                        }
                         $condition->available = $modinfo->available;
                         $condition->availableinfo = $modinfo->availableinfo;
                         $condition->cmid = $modinfo->id;
@@ -243,7 +245,7 @@ class locallib {
                     $condition->name = (empty($section->name)) ? get_string('section') . ' ' . $section->section : $section->name;
                     $condition->sectionid = $section->id;
                     $condition->sectionno = $section->section;
-                    $condition->url = (new \moodle_url('/course/view.php', 
+                    $condition->url = (new \moodle_url('/course/view.php',
                                                        [ 'id' => $section->course], 'section-' . $section->section))->__toString();
                     $condition->uservisible = $section->uservisible;
                     $condition->visible = $section->visible;
