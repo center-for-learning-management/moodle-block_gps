@@ -33,7 +33,7 @@ $params = array();
 if (!empty($id)) {
     $params = array('id' => $id);
 } else {
-    print_error('unspecifycourseid', 'error');
+    throw new \moodle_exception('unspecifycourseid', 'error');
 }
 $course = $DB->get_record('course', $params, '*', MUST_EXIST);
 $urlparams = array('id' => $course->id);
@@ -87,16 +87,24 @@ echo $OUTPUT->render_from_template(
 $unrevealed = [];
 $markers = array();
 
-$smallest_lon = 200;
-$smallest_lat = 200;
-$biggest_lon = -200;
-$biggest_lat = -200;
+$smallestlon = 200;
+$smallestlat = 200;
+$biggestlon = -200;
+$biggestlat = -200;
 
 foreach($locations AS &$location) {
-    if ($smallest_lon > $location->longitude) { $smallest_lon = $location->longitude; }
-    if ($smallest_lat > $location->latitude) { $smallest_lat = $location->latitude; }
-    if ($biggest_lon < $location->longitude) { $biggest_lon = $location->longitude; }
-    if ($biggest_lat < $location->latitude) { $biggest_lat = $location->latitude; }
+    if ($smallestlon > $location->longitude) {
+        $smallestlon = $location->longitude; 
+    }
+    if ($smallestlat > $location->latitude) {
+        $smallestlat = $location->latitude; 
+    }
+    if ($biggestlon < $location->longitude) {
+        $biggestlon = $location->longitude; 
+    }
+    if ($biggestlat < $location->latitude) {
+        $biggestlat = $location->latitude;
+    }
     $location->reveal = (isset($location->reveal)) ? $location->reveal : false;
     $location->revealname = (isset($location->revealname)) ? $location->revealname : false;
     $location->accuracy = (isset($location->accuracy)) ? $location->accuracy : 5;
@@ -107,12 +115,13 @@ foreach($locations AS &$location) {
     );
     $location->distance = \block_gps\locallib::get_distance($userposition, $conditionposition, 2);
     $chkdist = ($location->distance < $location->accuracy);
-    $location->distlbl = ($location->distance !== -1) ? number_format($location->distance, 0, ',', ' ') . ' ' . get_string('meters', 'block_gps') : get_string('n_a', 'block_gps');
+    $location->distlbl = ($location->distance !== -1) ? number_format($location->distance, 0, ',', ' ')
+        . ' ' . get_string('meters', 'block_gps') : get_string('n_a', 'block_gps');
 
     if (isset($location->type) && $location->type == 'self') {
         $location->marker = $CFG->wwwroot . '/blocks/gps/pix/google-maps-pin-orange.svg';
         $pic = new user_picture($USER);
-        $location->icon = $pic->get_url($PAGE); // $marker;
+        $location->icon = $pic->get_url($PAGE); // Use this as $marker!
         $location->name = get_string('you', 'block_gps');
         $location->alt = $location->name;
         $location->url = $CFG->wwwroot . '/user/profile.php?id=' . $USER->id;
@@ -121,16 +130,17 @@ foreach($locations AS &$location) {
         if ($location->cmid > 0) {
             $cm = $modinfo->get_cm($location->cmid);
             $location->alt = $cm->modname;
-            $location->icon = (method_exists($cm, 'get_icon_url')?$cm->get_icon_url():'');
+            $location->icon = (method_exists($cm, 'get_icon_url') ? $cm->get_icon_url() : '');
             $location->name = $cm->name;
             $location->url = $cm->url;
             $info = new \core_availability\info_module($cm);
-        } elseif ($location->sectionid > 0) {
+        } else if ($location->sectionid > 0) {
             $sec = $DB->get_record('course_sections', array('id' => $location->sectionid));
             $location->alt = get_string('section');
             $location->icon = $CFG->wwwroot . '/pix/i/folder.svg';
             $location->name = (!empty($sec->name) ? $sec->name : get_string('section') . ' ' . $sec->section);
-            $location->url = $CFG->wwwroot . '/course/view.php?id=' . $sec->course . '&sectionid=' . $sec->id . '#section-' . $sec->section;
+            $location->url = $CFG->wwwroot . '/course/view.php?id='
+                . $sec->course . '&sectionid=' . $sec->id . '#section-' . $sec->section;
             $info = new \core_availability\info_section($courseformat->get_section($sec));
         }
         $condition = new \availability_gps\condition($location);
@@ -150,14 +160,14 @@ foreach($locations AS &$location) {
         $unrevealed[] = $location;
     }
 }
-$center_lat = ($smallest_lat + $biggest_lat) / 2;
-$center_lon = ($smallest_lon + $biggest_lon) / 2;
+$centerlat = ($smallestlat + $biggestlat) / 2;
+$centerlon = ($smallestlon + $biggestlon) / 2;
 
 echo $OUTPUT->render_from_template(
     'block_gps/map',
     (object) array(
-        'bounds' => "[$smallest_lat, $smallest_lon], [$biggest_lat, $biggest_lon ]",
-        'center' => "$center_lat, $center_lon",
+        'bounds' => "[$smallestlat, $smallestlon], [$biggestlat, $biggestlon ]",
+        'center' => "$centerlat, $centerlon",
         'markers' => $markers,
         'wwwroot' => $CFG->wwwroot,
     )
@@ -165,7 +175,7 @@ echo $OUTPUT->render_from_template(
 
 if (count($unrevealed) > 0) {
     echo $OUTPUT->render_from_template(
-        'block_gps/unrevealed-' . ((count($unrevealed) == 1)?'single':'multiple'),
+        'block_gps/unrevealed-' . ((count($unrevealed) == 1) ? 'single' : 'multiple'),
         (object) array(
             'amount' => count($unrevealed),
             'items' => $unrevealed,
