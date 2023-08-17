@@ -210,7 +210,7 @@ class locallib {
                 }
                 foreach ($conditions->c as $condition) {
                     if (!empty($condition->type) && $condition->type == 'gps') {
-                        if ($onlycheck) { 
+                        if ($onlycheck) {
                             return true;
                         }
                         $condition->available = $modinfo->available;
