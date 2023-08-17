@@ -39,7 +39,7 @@ class block_gps extends block_base {
         if ($this->content !== null) {
             return $this->content;
         }
-        $this->content =  new stdClass;
+        $this->content = new stdClass;
         $this->content->text = $OUTPUT->render_from_template(
             'block_gps/block',
             (object)array(
