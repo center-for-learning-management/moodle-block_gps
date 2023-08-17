@@ -134,10 +134,10 @@ class block_gps_ws extends external_api {
             return 'coordinates_set';
         } else { 
             if ($distance < 5) {
-            return 'moved_less_than_5m';
-            } 
-        } else {
-            return 'invalid_coordinates';
+                return 'moved_less_than_5m';
+            } else {
+                return 'invalid_coordinates';
+            }
         }
     }
     public static function locate_returns() {
