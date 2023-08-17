@@ -23,8 +23,6 @@
 
 namespace block_gps;
 
-defined('MOODLE_INTERNAL') || die;
-
 class locallib {
     private static $caches = [];
     /**
@@ -34,7 +32,7 @@ class locallib {
      * @return whatever is in the cache.
      */
     public static function cache_get($cache, $key) {
-        if (!in_array($cache, [ 'application', 'request', 'session'])){
+        if (!in_array($cache, [ 'application', 'request', 'session'])) {
             throw new \moodle_exception('invalid cache type requested');
         }
         if (empty(self::$caches[$cache])) {
@@ -68,11 +66,15 @@ class locallib {
     /**
      * Checks a list of positions if coordinates are valid.
      * @param positions Array containing position objects
-    **/
+     **/
     private static function check_positions($positions) {
-        foreach($positions AS $position) {
-            if (!isset($position->longitude) || $position->longitude < -180 || $position->longitude > 180) return false;
-            if (!isset($position->latitude) || $position->latitude < -180 || $position->latitude > 180) return false;
+        foreach ($positions as $position) {
+            if (!isset($position->longitude) || $position->longitude < -180 || $position->longitude > 180) {
+                return false;
+            }
+            if (!isset($position->latitude) || $position->latitude < -180 || $position->latitude > 180) {
+                return false;
+            }
         }
         return true;
     }
@@ -82,7 +84,7 @@ class locallib {
      * @param position2 object containing longitude and latitude
      * @param decimals (optional) decimals to round the distance, defaults to 2
      * @return distance in meters or -1 if positions are invalid
-    **/
+     **/
     public static function get_distance($position1, $position2, $decimals = 2) {
         if (!self::check_positions(array($position1, $position2))) {
             return -1;
@@ -91,9 +93,9 @@ class locallib {
         $lon1 = deg2rad($position1->longitude);
         $lat2 = deg2rad($position2->latitude);
         $lon2 = deg2rad($position2->longitude);
-        $latDelta = $lat2 - $lat1;
-        $lonDelta = $lon2 - $lon1;
-        $angle = 2*asin(sqrt(pow(sin($latDelta / 2), 2) + cos($lat1) * cos($lat2) * pow(sin($lonDelta / 2), 2)));
+        $latdelta = $lat2 - $lat1;
+        $londelta = $lon2 - $lon1;
+        $angle = 2 * asin(sqrt(pow(sin($latdelta / 2), 2) + cos($lat1) * cos($lat2) * pow(sin($londelta / 2), 2)));
         return round($angle * 6378.388 * 1000, $decimals);
     }
     public static function get_location($type = "", $default = null) {
@@ -106,11 +108,15 @@ class locallib {
             ];
         } else {
             $var = \block_gps\locallib::cache_get("session", $type);
-            if (!empty($var)) return $var;
-            elseif (isset($default)) return $default;
-            else return false;
+            if (!empty($var)) {
+                return $var;
+            } else {
+                if (isset($default)) {
+                    return $default;
+                } else {
+                    return false;
+                }
         }
-
     }
 
     public static function is_https() {
@@ -126,17 +132,17 @@ class locallib {
         global $DB;
         $positions = array();
         $sections = $DB->get_records('course_sections', array('course' => $courseid));
-        foreach($sections AS $section) {
-            $has_positions = self::load_position_condition($section, 'sectionid');
-            if (count($has_positions) > 0) {
-                $positions = array_merge($positions, $has_positions);
+        foreach ($sections AS $section) {
+            $haspositions = self::load_position_condition($section, 'sectionid');
+            if (count($haspositions) > 0) {
+                $positions = array_merge($positions, $haspositions);
             }
         }
         $modules = $DB->get_records('course_modules', array('course' => $courseid));
-        foreach($modules AS $module) {
-            $has_positions = self::load_position_condition($module, 'cmid');
-            if (count($has_positions) > 0) {
-                $positions = array_merge($positions, $has_positions);
+        foreach ($modules as $module) {
+            $haspositions = self::load_position_condition($module, 'cmid');
+            if (count($haspositions) > 0) {
+                $positions = array_merge($positions, $haspositions);
             }
         }
         return $positions;
@@ -146,21 +152,29 @@ class locallib {
      * @param o Object of table course_sections or course_modules
      * @param idtype specifies if id-attribute of o is sectionid or cmid
      * @return array containing positions
-    **/
+     **/
     public static function load_position_condition($o, $idtype) {
         $positions = array();
         // Make sure it has a type and object contains valid data.
         if (!empty($idtype) && isset($o->availability)) {
             $av = json_decode($o->availability ?? '');
             if (isset($av->c) && count($av->c) > 0) {
-                foreach($av->c AS $condition) {
+                foreach ($av->c as $condition) {
                     if ($condition->type == 'gps') {
                         $condition->cmid = 0; $condition->sectionid = 0;
                         $condition->{$idtype} = $o->id;
-                        if (!isset($condition->accuracy)) { $condition->accuracy = 5; }
-                        if (!isset($condition->persistent)) { $condition->persistent = 0; }
-                        if (!isset($condition->revealname)) { $condition->revealname = 0; }
-                        if (!isset($condition->reveal)) { $condition->reveal = 0; }
+                        if (!isset($condition->accuracy)) {
+                            $condition->accuracy = 5; 
+                        }
+                        if (!isset($condition->persistent)) {
+                            $condition->persistent = 0; 
+                        }
+                        if (!isset($condition->revealname)) {
+                            $condition->revealname = 0; 
+                        }
+                        if (!isset($condition->reveal)) {
+                            $condition->reveal = 0; 
+                        }
                         $positions[] = $condition;
                     }
                 }
@@ -187,10 +201,12 @@ class locallib {
         $honeypots = [];
         $courseinfo = \get_fast_modinfo($courseid);
         $cms = $courseinfo->get_instances();
-        foreach($cms as $type => $modlist) {
+        foreach ($cms as $type => $modlist) {
             foreach ($modlist as $modinfo) {
                 $conditions = json_decode($modinfo->availability ?? '');
-                if (empty($conditions->c)) continue;
+                if (empty($conditions->c)) {
+                    continue;
+                }
                 foreach ($conditions->c as $condition) {
                     if (!empty($condition->type) && $condition->type == 'gps') {
                         if ($onlycheck) return true;
@@ -213,16 +229,21 @@ class locallib {
         $sections = $courseinfo->get_section_info_all();
         foreach ($sections as $section) {
             $conditions = json_decode($section->availability ?? '');
-            if (empty($conditions->c)) continue;
+            if (empty($conditions->c)) {
+                continue;
+            }
             foreach ($conditions->c as $condition) {
                 if (!empty($condition->type) && $condition->type == 'gps') {
-                    if ($onlycheck) return true;
+                    if ($onlycheck) {
+                        return true;
+                    }
                     $condition->available = $section->available;
                     $condition->availableinfo = $section->availableinfo;
                     $condition->name = (empty($section->name)) ? get_string('section') . ' ' . $section->section : $section->name;
                     $condition->sectionid = $section->id;
                     $condition->sectionno = $section->section;
-                    $condition->url = (new \moodle_url('/course/view.php', [ 'id' => $section->course], 'section-' . $section->section))->__toString();
+                    $condition->url = (new \moodle_url('/course/view.php', 
+                                                       [ 'id' => $section->course], 'section-' . $section->section))->__toString();
                     $condition->uservisible = $section->uservisible;
                     $condition->visible = $section->visible;
                     $honeypots[] = $condition;
