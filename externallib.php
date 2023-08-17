@@ -36,7 +36,7 @@ class block_gps_ws extends external_api {
         );
     }
     public static function getbanner($courseid) {
-        global $CFG, $COURSE, $OUTPUT $PAGE;
+        global $CFG, $COURSE, $OUTPUT, $PAGE;
         $params = self::validate_parameters(
             self::getbanner_parameters(),
             array(
