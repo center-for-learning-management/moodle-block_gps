@@ -116,6 +116,7 @@ class locallib {
                 } else {
                     return false;
                 }
+            }
         }
     }
 
