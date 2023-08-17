@@ -55,7 +55,7 @@ $context = context_course::instance($course->id, MUST_EXIST);
 $PAGE->set_context($context);
 require_login($course);
 
-$PAGE->set_url(new moodle_url($CFG->wwwroot . '/blocks/gps/map.php', $urlparams)); // Defined here to avoid notices on errors etc
+$PAGE->set_url(new moodle_url($CFG->wwwroot . '/blocks/gps/map.php', $urlparams)); // Defined here to avoid notices on errors etc!
 $PAGE->set_cacheable(false);
 $PAGE->set_pagelayout('course');
 $courseformat = course_get_format($course);
@@ -92,15 +92,15 @@ $smallestlat = 200;
 $biggestlon = -200;
 $biggestlat = -200;
 
-foreach($locations AS &$location) {
+foreach ($locations as &$location) {
     if ($smallestlon > $location->longitude) {
-        $smallestlon = $location->longitude; 
+        $smallestlon = $location->longitude;
     }
     if ($smallestlat > $location->latitude) {
-        $smallestlat = $location->latitude; 
+        $smallestlat = $location->latitude;
     }
     if ($biggestlon < $location->longitude) {
-        $biggestlon = $location->longitude; 
+        $biggestlon = $location->longitude;
     }
     if ($biggestlat < $location->latitude) {
         $biggestlat = $location->latitude;
@@ -121,7 +121,7 @@ foreach($locations AS &$location) {
     if (isset($location->type) && $location->type == 'self') {
         $location->marker = $CFG->wwwroot . '/blocks/gps/pix/google-maps-pin-orange.svg';
         $pic = new user_picture($USER);
-        $location->icon = $pic->get_url($PAGE); // Use this as $marker!
+        $location->icon = $pic->get_url($PAGE); // Use this as marker!
         $location->name = get_string('you', 'block_gps');
         $location->alt = $location->name;
         $location->url = $CFG->wwwroot . '/user/profile.php?id=' . $USER->id;
