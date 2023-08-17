@@ -151,7 +151,7 @@ class locallib {
         $positions = array();
         // Make sure it has a type and object contains valid data.
         if (!empty($idtype) && isset($o->availability)) {
-            $av = json_decode($o->availability);
+            $av = json_decode($o->availability ?? '');
             if (isset($av->c) && count($av->c) > 0) {
                 foreach($av->c AS $condition) {
                     if ($condition->type == 'gps') {
@@ -189,7 +189,7 @@ class locallib {
         $cms = $courseinfo->get_instances();
         foreach($cms as $type => $modlist) {
             foreach ($modlist as $modinfo) {
-                $conditions = json_decode($modinfo->availability);
+                $conditions = json_decode($modinfo->availability ?? '');
                 if (empty($conditions->c)) continue;
                 foreach ($conditions->c as $condition) {
                     if (!empty($condition->type) && $condition->type == 'gps') {
@@ -212,7 +212,7 @@ class locallib {
 
         $sections = $courseinfo->get_section_info_all();
         foreach ($sections as $section) {
-            $conditions = json_decode($section->availability);
+            $conditions = json_decode($section->availability ?? '');
             if (empty($conditions->c)) continue;
             foreach ($conditions->c as $condition) {
                 if (!empty($condition->type) && $condition->type == 'gps') {
