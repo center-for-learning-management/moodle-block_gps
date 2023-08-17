@@ -24,8 +24,6 @@
 namespace block_gps\privacy;
 use core_privacy\local\metadata\collection;
 
-defined('MOODLE_INTERNAL') || die;
-
 class provider implements \core_privacy\local\metadata\provider {
     public static function get_metadata(collection $collection) : collection {
         $collection->add_database_table(
@@ -46,7 +44,7 @@ class provider implements \core_privacy\local\metadata\provider {
      *
      * @param   int           $userid       The user to search.
      * @return  contextlist   $contextlist  The list of contexts used in this plugin.
-    */
+     */
     public static function get_contexts_for_userid(int $userid) : contextlist {
         $contextlist = new \core_privacy\local\request\contextlist();
 
