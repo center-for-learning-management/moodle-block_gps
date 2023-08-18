@@ -182,7 +182,9 @@ class locallib {
      * @param onlycheck only return true after first found condition.
      */
     public static function get_honeypots($courseid, $onlycheck = false) {
-        require_login();
+        // require_login is not allowed here, because get_honeypots is also calld in the block_gps_before_standard_html_head()
+        // and during the rendering of the html-head a call of require_login would destroy the guest session and create a new sesskey.
+        // require_login();
 
         $honeypots = [];
         $courseinfo = \get_fast_modinfo($courseid);
