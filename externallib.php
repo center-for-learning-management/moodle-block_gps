@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die;
 require_once($CFG->libdir . "/externallib.php");
 
-class block_gps_ws extends external_api {
+class block_gps_ws extends \core_external\external_api {
     /**
      * Get the banner to be shown on top of the course page.
      **/

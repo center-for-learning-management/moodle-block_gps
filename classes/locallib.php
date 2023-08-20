@@ -107,7 +107,7 @@ class locallib {
                 'longitude' => self::get_location('longitude'),
             ];
         } else {
-            $var = \block_gps\locallib::cache_get("session", $type);
+            $var = self::cache_get("session", $type);
             if (!empty($var)) {
                 return $var;
             } else {
