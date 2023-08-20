@@ -32,15 +32,14 @@ class block_gps extends block_base {
         $this->title = get_string('pluginname', 'block_gps');
     }
     public function get_content() {
-        global $CFG, $COURSE, $OUTPUT, $PAGE;
+        global $CFG, $COURSE, $OUTPUT;
 
-        $PAGE->requires->css('/blocks/gps/style/main.css');
+        $this->page->requires->css('/blocks/gps/style/main.css');
 
         if ($this->content !== null) {
-          return $this->content;
+            return $this->content;
         }
-        //print_r(\block_gps\locallib::get_location());die();
-        $this->content         =  new stdClass;
+        $this->content = new stdClass;
         $this->content->text = $OUTPUT->render_from_template(
             'block_gps/block',
             (object)array(

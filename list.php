@@ -33,7 +33,7 @@ $params = array();
 if (!empty($id)) {
     $params = array('id' => $id);
 } else {
-    print_error('unspecifycourseid', 'error');
+    throw new moodle_exception('unspecifycourseid', 'error');
 }
 $course = $DB->get_record('course', $params, '*', MUST_EXIST);
 $urlparams = array('id' => $course->id);
@@ -46,7 +46,7 @@ $context = context_course::instance($course->id, MUST_EXIST);
 $PAGE->set_context($context);
 require_login($course);
 
-$PAGE->set_url(new moodle_url($CFG->wwwroot . '/blocks/gps/list.php'), $urlparams); // Defined here to avoid notices on errors etc
+$PAGE->set_url(new moodle_url($CFG->wwwroot . '/blocks/gps/list.php'), $urlparams); // Defined here to avoid notices on errors etc!
 $PAGE->set_cacheable(false);
 $PAGE->set_pagelayout('course');
 $course->format = course_get_format($course)->get_format();
@@ -74,20 +74,21 @@ echo $OUTPUT->render_from_template(
 );
 
 $unrevealed = array();
-foreach($locations AS &$location) {
+foreach ($locations as &$location) {
     $conditionposition = (object)array(
         'longitude' => $location->longitude,
         'latitude' => $location->latitude,
     );
     $location->distance = \block_gps\locallib::get_distance($userposition, $conditionposition, 2);
     $chkdist = ($location->distance < $location->accuracy);
-    $location->distlbl = ($location->distance !== -1) ? number_format($location->distance, 0, ',', ' ') . ' ' . get_string('meters', 'block_gps') : get_string('n_a', 'block_gps');
+    $location->distlbl = ($location->distance !== -1) ?
+        number_format($location->distance, 0, ',', ' ') . ' ' . get_string('meters', 'block_gps') : get_string('n_a', 'block_gps');
 
     $location->alt = ''; $location->icon = ''; $location->name = ''; $location->url = '';
     if ($location->cmid > 0) {
         $cm = $modinfo->get_cm($location->cmid);
         $location->alt = $cm->modname;
-        $location->icon = (method_exists($cm, 'get_icon_url')?$cm->get_icon_url():'');
+        $location->icon = (method_exists($cm, 'get_icon_url') ? $cm->get_icon_url() : '');
         $location->name = $cm->name;
         $location->url = $cm->url;
         $info = new \core_availability\info_module($cm);
@@ -97,7 +98,8 @@ foreach($locations AS &$location) {
         $location->alt = get_string('section');
         $location->icon = $CFG->wwwroot . '/pix/i/folder.svg';
         $location->name = (!empty($sec->name) ? $sec->name : get_string('section') . ' ' . $sec->section);
-        $location->url = $CFG->wwwroot . '/course/view.php?id=' . $sec->course . '&sectionid=' . $sec->id . '#section-' . $sec->section;
+        $location->url = $CFG->wwwroot . '/course/view.php?id='
+            . $sec->course . '&sectionid=' . $sec->id . '#section-' . $sec->section;
         $info = new \core_availability\info_section($courseformat->get_section($sec));
     }
     $condition = new \availability_gps\condition($location);
@@ -124,7 +126,7 @@ echo $OUTPUT->render_from_template(
 
 if (count($unrevealed) > 0) {
     echo $OUTPUT->render_from_template(
-        'block_gps/unrevealed-' . ((count($unrevealed) == 1)?'single':'multiple'),
+        'block_gps/unrevealed-' . ((count($unrevealed) == 1) ? 'single' : 'multiple'),
         (object) array(
             'amount' => count($unrevealed),
             'items' => $unrevealed,
