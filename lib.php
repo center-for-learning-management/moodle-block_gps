@@ -23,12 +23,5 @@
  */
 
 function block_gps_before_standard_html_head() {
-    global $COURSE, $PAGE;
-
-    if (!empty($PAGE->context->contextlevel)
-            && $PAGE->context->contextlevel >= CONTEXT_COURSE
-            && \block_gps\locallib::get_honeypots($COURSE->id, true)) {
-        $PAGE->requires->js_call_amd('block_gps/geoassist', 'getHoneypots', [ 'courseid' => $COURSE->id ]);
-    }
-
+    \block_gps\hook_callbacks::before_standard_head_html_generation();
 }
